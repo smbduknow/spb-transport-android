@@ -1,22 +1,26 @@
 package me.smbduknow.transport;
 
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.transit.realtime.GtfsRealtime;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private GoogleMap mMap;
 
@@ -30,42 +34,65 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // Add a marker in Spb and move the camera
+        LatLng spb = new LatLng(59.845, 30.325);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    URL url = new URL("http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle?" +
-                            "bbox=30.32,59.84,30.33,59.85&transports=bus,trolley,tram,ship");
-                    GtfsRealtime.FeedMessage feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream());
-                    for (GtfsRealtime.FeedEntity entity : feed.getEntityList()) {
-                        Log.d("transport", entity.getVehicle().getVehicle().getLabel() + ": " + entity.getVehicle().toString());
-                        Log.d("transport", entity.getVehicle().getTrip().toString());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f));
+        mMap.setOnCameraChangeListener(this);
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        mMap.clear();
+
+        LatLngBounds cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+        String coordsString = String.format(Locale.US, "%.2f,%.2f,%.2f,%.2f",
+                cameraBounds.southwest.longitude, cameraBounds.southwest.latitude,
+                cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
+        );
+        new BusTask(this, mMap, coordsString).execute();
+    }
+
+
+
+    public static class BusTask extends AsyncTask<Void, Void, Void> {
+
+        private Activity activity;
+        private GoogleMap map;
+        private String coordsString;
+
+        public BusTask(Activity activity, GoogleMap map, String coordsString) {
+            this.activity = activity;
+            this.map = map;
+            this.coordsString = coordsString;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                URL url = new URL("http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle?" +
+                        "bbox="+coordsString+"&transports=bus,trolley,tram,ship");
+                Log.d("transport", url.toString());
+                GtfsRealtime.FeedMessage feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream());
+                for (GtfsRealtime.FeedEntity entity : feed.getEntityList()) {
+                    final String label = entity.getVehicle().getVehicle().getLabel();
+                    final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            map.addMarker(new MarkerOptions().position(pos).title(label));
+                        }
+                    });
                 }
-                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }.execute();
-
+            return null;
+        }
     }
 }
