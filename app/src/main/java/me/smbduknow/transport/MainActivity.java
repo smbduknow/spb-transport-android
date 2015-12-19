@@ -10,6 +10,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -50,7 +52,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.clear();
 
         LatLngBounds cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-        String coordsString = String.format(Locale.US, "%.2f,%.2f,%.2f,%.2f",
+        String coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
                 cameraBounds.southwest.longitude, cameraBounds.southwest.latitude,
                 cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
         );
@@ -80,12 +82,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("transport", url.toString());
                 GtfsRealtime.FeedMessage feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream());
                 for (GtfsRealtime.FeedEntity entity : feed.getEntityList()) {
+                    final float bearing = entity.getVehicle().getPosition().getBearing();
                     final String label = entity.getVehicle().getVehicle().getLabel();
                     final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            map.addMarker(new MarkerOptions().position(pos).title(label));
+                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromResource(R.drawable.bus);
+                            map.addMarker(new MarkerOptions().position(pos).rotation(180+bearing).title(label).icon(btmp));
                         }
                     });
                 }
