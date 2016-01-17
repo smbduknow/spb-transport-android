@@ -20,11 +20,14 @@ import com.google.transit.realtime.GtfsRealtime;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private GoogleMap mMap;
+
+    private List<Route> routes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        routes = CSVUtil.readCsv(this);
     }
 
     @Override
@@ -61,7 +65,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    public static class BusTask extends AsyncTask<Void, Void, Void> {
+    public  class BusTask extends AsyncTask<Void, Void, Void> {
 
         private Activity activity;
         private GoogleMap map;
@@ -83,12 +87,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 GtfsRealtime.FeedMessage feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream());
                 for (GtfsRealtime.FeedEntity entity : feed.getEntityList()) {
                     final float bearing = entity.getVehicle().getPosition().getBearing();
-                    final String label = entity.getVehicle().getVehicle().getLabel();
+                    final String routeId = entity.getVehicle().getTrip().getRouteId();
                     final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             BitmapDescriptor btmp = BitmapDescriptorFactory.fromResource(R.drawable.bus);
+                            String label = findRouteLabel(routeId);
                             map.addMarker(new MarkerOptions().position(pos).rotation(180+bearing).title(label).icon(btmp));
                         }
                     });
@@ -98,5 +103,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
             return null;
         }
+    }
+
+    public String findRouteLabel(String routeId) {
+        for(Route route : routes) {
+            if(route.id.equals(routeId)) return route.label;
+        }
+        return "";
     }
 }
