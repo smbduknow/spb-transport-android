@@ -1,6 +1,7 @@
 package me.smbduknow.transport;
 
 import android.app.Activity;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +21,7 @@ import com.google.transit.realtime.GtfsRealtime;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +29,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
 
+    private Route searchRoute = new Route();
     private List<Route> routes;
 
     @Override
@@ -34,8 +37,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         routes = CSVUtil.readCsv(this);
     }
@@ -92,9 +94,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromResource(R.drawable.bus);
                             String label = findRouteLabel(routeId);
-                            map.addMarker(new MarkerOptions().position(pos).rotation(180+bearing).title(label).icon(btmp));
+                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.bus, label);
+                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
+                            map.addMarker(new MarkerOptions().position(pos).rotation(180+bearing).icon(btmp));
                         }
                     });
                 }
@@ -106,9 +109,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public String findRouteLabel(String routeId) {
-        for(Route route : routes) {
-            if(route.id.equals(routeId)) return route.label;
-        }
-        return "";
+        searchRoute.id = routeId;
+        int pos = Collections.binarySearch(routes, searchRoute);
+        return pos >=0 ? routes.get(pos).label : "";
     }
 }
