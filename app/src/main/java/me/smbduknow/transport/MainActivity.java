@@ -95,9 +95,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void run() {
                             String label = findRouteLabel(routeId);
-                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.bus, label);
+                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label);
                             BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
-                            map.addMarker(new MarkerOptions().position(pos).rotation(180+bearing).icon(btmp));
+                            map.addMarker(new MarkerOptions().position(pos).rotation(-90+bearing).icon(btmp).anchor(0.5f,0.5f));
                         }
                     });
                 }

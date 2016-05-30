@@ -16,11 +16,11 @@ public class DrawableUtil {
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(10);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(12);
 
         Canvas canvas = new Canvas(bm);
-        canvas.drawText(text, 0, bm.getHeight()/2, paint);
+        canvas.drawText(text, bm.getWidth()/2, bm.getHeight()/2, paint);
 
         return new BitmapDrawable(bm);
     }
