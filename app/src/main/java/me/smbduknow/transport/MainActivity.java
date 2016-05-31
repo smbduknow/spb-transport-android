@@ -16,14 +16,18 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.transit.realtime.GtfsRealtime;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
@@ -31,6 +35,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Route searchRoute = new Route();
     private List<Route> routes;
+
+    protected Map<String, Marker> markers = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +61,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        mMap.clear();
-
         LatLngBounds cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+
+        for(Iterator<Map.Entry<String, Marker>> it = markers.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, Marker> entry = it.next();
+            Marker marker = entry.getValue();
+            if(!cameraBounds.contains(marker.getPosition())) {
+                marker.remove();
+                it.remove();
+            }
+        }
+
         String coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
                 cameraBounds.southwest.longitude, cameraBounds.southwest.latitude,
                 cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
@@ -91,10 +105,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     final String routeId = entity.getVehicle().getTrip().getRouteId();
                     final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
                     activity.runOnUiThread(() -> {
-                        String label = findRouteLabel(routeId);
-                        BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label, -90+bearing);
-                        BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
-                        map.addMarker(new MarkerOptions().position(pos).icon(btmp).anchor(0.5f,0.5f));
+                        if(!markers.containsKey(entity.getId())) {
+                            String label = findRouteLabel(routeId);
+                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label, 90+bearing);
+                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
+                            Marker marker = map.addMarker(new MarkerOptions().position(pos).icon(btmp).anchor(0.5f,0.5f));
+                            markers.put(entity.getId(), marker);
+                        }
                     });
                 }
             } catch (IOException e) {
