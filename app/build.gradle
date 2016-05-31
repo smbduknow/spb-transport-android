@@ -1,8 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "me.smbduknow.transport"
@@ -20,9 +27,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    final supportLibraryVersion = '23.4.0'
+    final googlePlayVersion = '8.4.0'
+
+    provided "org.projectlombok:lombok:1.14.4"
+
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.google.android.gms:play-services:8.4.0'
-    compile 'com.google.transit:gtfs-realtime-bindings:0.0.4'
+
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.google.android.gms:play-services:$googlePlayVersion"
+    compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
+
 }

@@ -81,7 +81,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected Void doInBackground(Void... params) {
-
             try {
                 URL url = new URL("http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle?" +
                         "bbox="+coordsString+"&transports=bus,trolley,tram,ship");
@@ -91,14 +90,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     final float bearing = entity.getVehicle().getPosition().getBearing();
                     final String routeId = entity.getVehicle().getTrip().getRouteId();
                     final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String label = findRouteLabel(routeId);
-                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label);
-                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
-                            map.addMarker(new MarkerOptions().position(pos).rotation(-90+bearing).icon(btmp).anchor(0.5f,0.5f));
-                        }
+                    activity.runOnUiThread(() -> {
+                        String label = findRouteLabel(routeId);
+                        BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label, -90+bearing);
+                        BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
+                        map.addMarker(new MarkerOptions().position(pos).icon(btmp).anchor(0.5f,0.5f));
                     });
                 }
             } catch (IOException e) {
