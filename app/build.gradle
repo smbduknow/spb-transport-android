@@ -29,14 +29,18 @@ android {
 dependencies {
 
     final supportLibraryVersion = '23.4.0'
-    final googlePlayVersion = '8.4.0'
+    final googlePlayVersion = '9.0.2'
 
     provided "org.projectlombok:lombok:1.14.4"
 
-    testCompile 'junit:junit:4.12'
+//    testCompile 'junit:junit:4.12'
 
+    compile "com.android.support:support-v4:$supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.google.android.gms:play-services:$googlePlayVersion"
+    compile "com.android.support:design:$supportLibraryVersion"
+
+    compile "com.google.android.gms:play-services-maps:$googlePlayVersion"
+    compile "com.google.android.gms:play-services-location:$googlePlayVersion"
     compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
 
 }

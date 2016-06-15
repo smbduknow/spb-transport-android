@@ -23,7 +23,7 @@ public class DrawableUtil {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(16);
+        paint.setTextSize(18);
         paint.setTextAlign(Paint.Align.CENTER);
 
         Canvas canvas = new Canvas(bm);

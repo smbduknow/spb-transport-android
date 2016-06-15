@@ -1,10 +1,16 @@
 package me.smbduknow.transport;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +35,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import me.smbduknow.transport.geo.FusedLocationProvider;
+import me.smbduknow.transport.geo.LocationProvider;
+
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private GoogleMap mMap;
@@ -38,6 +47,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected Map<String, Marker> markers = new HashMap<>();
 
+    private LocationProvider locationProvider;
+
+    private long millis;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +59,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         routes = CSVUtil.readCsv(this);
+
+        locationProvider = new FusedLocationProvider(this, locationListener);
+
+        millis = System.currentTimeMillis();
     }
 
     @Override
@@ -61,6 +78,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        if(System.currentTimeMillis() < millis + 1000) return;
+
         LatLngBounds cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 
         for(Iterator<Map.Entry<String, Marker>> it = markers.entrySet().iterator(); it.hasNext(); ) {
@@ -76,6 +95,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 cameraBounds.southwest.longitude, cameraBounds.southwest.latitude,
                 cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
         );
+
         new BusTask(this, mMap, coordsString).execute();
     }
 
@@ -105,12 +125,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     final String routeId = entity.getVehicle().getTrip().getRouteId();
                     final LatLng pos = new LatLng(entity.getVehicle().getPosition().getLatitude(), entity.getVehicle().getPosition().getLongitude());
                     activity.runOnUiThread(() -> {
+                        Route route = findRoute(routeId);
+                        int res = R.drawable.ic_bus;
+                        if(route.typeLabel.equals("tram")) res = R.drawable.ic_tram;
+                        if(route.typeLabel.equals("trolley")) res = R.drawable.ic_troll;
+                        BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), res, route.label, -90+bearing);
+                        BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
                         if(!markers.containsKey(entity.getId())) {
-                            String label = findRouteLabel(routeId);
-                            BitmapDrawable bd = DrawableUtil.writeOnDrawable(getApplicationContext(), R.drawable.ic_bus, label, 90+bearing);
-                            BitmapDescriptor btmp = BitmapDescriptorFactory.fromBitmap(bd.getBitmap());
                             Marker marker = map.addMarker(new MarkerOptions().position(pos).icon(btmp).anchor(0.5f,0.5f));
                             markers.put(entity.getId(), marker);
+                        } else {
+                            Marker marker = markers.get(entity.getId());
+                            marker.setPosition(pos);
+                            marker.setIcon(btmp);
                         }
                     });
                 }
@@ -121,9 +148,62 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public String findRouteLabel(String routeId) {
+    public Route findRoute(String routeId) {
         searchRoute.id = routeId;
         int pos = Collections.binarySearch(routes, searchRoute);
-        return pos >=0 ? routes.get(pos).label : "";
+        return pos >=0 ? routes.get(pos) : null;
+    }
+
+
+
+    protected void requestUserLocation() {
+        checkPermission();
+    }
+
+
+
+    private LocationProvider.OnRecieveLocationListener locationListener = new LocationProvider.OnRecieveLocationListener() {
+        @Override
+        public void onProviderConnected() {
+            requestUserLocation();
+        }
+        @Override
+        public void onReceiveLocation(Location location) {
+            if (location != null) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.5f));
+            }
+        }
+        @Override
+        public void onReceiveFailed() {
+
+        }
+    };
+
+
+
+    private static final int REQUEST_CODE_PERMISSION = 1;
+
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            permissionGranted();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_PERMISSION && grantResults.length >= 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permissionGranted();
+            }
+        }
+    }
+
+    private void permissionGranted() {
+        if(locationProvider != null && locationProvider.isAvailable()) {
+            locationProvider.requestLastLocation();
+        }
     }
 }
