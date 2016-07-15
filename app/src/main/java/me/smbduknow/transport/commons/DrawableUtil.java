@@ -1,4 +1,4 @@
-package me.smbduknow.transport;
+package me.smbduknow.transport.commons;
 
 import android.content.Context;
 import android.graphics.Bitmap;

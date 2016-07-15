@@ -1,4 +1,4 @@
-package me.smbduknow.transport;
+package me.smbduknow.transport.model;
 
 import java.io.Serializable;
 

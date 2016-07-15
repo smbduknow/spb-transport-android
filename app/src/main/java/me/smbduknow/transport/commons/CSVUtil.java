@@ -1,4 +1,4 @@
-package me.smbduknow.transport;
+package me.smbduknow.transport.commons;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import me.smbduknow.transport.model.Route;
 
 public class CSVUtil {
 

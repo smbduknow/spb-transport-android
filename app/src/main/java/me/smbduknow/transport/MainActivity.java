@@ -35,8 +35,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import me.smbduknow.transport.commons.CSVUtil;
+import me.smbduknow.transport.commons.DrawableUtil;
 import me.smbduknow.transport.geo.FusedLocationProvider;
 import me.smbduknow.transport.geo.LocationProvider;
+import me.smbduknow.transport.model.Route;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
@@ -55,7 +58,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         routes = CSVUtil.readCsv(this);
@@ -69,7 +71,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Spb and move the camera
         LatLng spb = new LatLng(59.845, 30.325);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f));
@@ -96,18 +97,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
         );
 
-        new BusTask(this, mMap, coordsString).execute();
+        new TransportTask(this, mMap, coordsString).execute();
     }
 
 
 
-    public  class BusTask extends AsyncTask<Void, Void, Void> {
+    public  class TransportTask extends AsyncTask<Void, Void, Void> {
 
         private Activity activity;
         private GoogleMap map;
         private String coordsString;
 
-        public BusTask(Activity activity, GoogleMap map, String coordsString) {
+        public TransportTask(Activity activity, GoogleMap map, String coordsString) {
             this.activity = activity;
             this.map = map;
             this.coordsString = coordsString;
