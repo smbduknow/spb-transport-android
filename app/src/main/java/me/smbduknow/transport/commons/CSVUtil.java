@@ -26,10 +26,10 @@ public class CSVUtil {
             while ((line = reader.readLine()) != null) {
                 String[] rowData = line.split(",");
                 Route route = new Route();
-                route.id = rowData[0];
-                route.label = rowData[2];
-                route.type = rowData[4];
-                route.typeLabel = rowData[5];
+                route.setId(rowData[0]);
+                route.setLabel(rowData[2]);
+                route.setType(rowData[4]);
+                route.setTypeLabel(rowData[5]);
                 resultList.add(route);
             }
             Collections.sort(resultList);
