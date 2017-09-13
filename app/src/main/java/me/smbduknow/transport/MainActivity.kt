@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatDelegate
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -40,6 +41,9 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
         setContentView(R.layout.activity_main)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -88,7 +92,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
         override fun doInBackground(vararg params: Void): Void? {
             try {
                 val url = URL("http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle?" +
-                        "bbox=" + coordsString + "&transports=bus,trolley,tram,ship")
+                        "bbox=" + coordsString + "&transports=bus,trolley,tram")
                 Log.d("transport", url.toString())
                 val feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream())
                 for (entity in feed.entityList) {
@@ -97,18 +101,23 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
                     val pos = LatLng(entity.vehicle.position.latitude.toDouble(), entity.vehicle.position.longitude.toDouble())
                     activity.runOnUiThread {
                         val route = findRoute(routeId)
-                        var res = R.drawable.ic_bus
-                        if (route?.typeLabel == "tram") res = R.drawable.ic_tram
-                        if (route?.typeLabel == "trolley") res = R.drawable.ic_troll
-                        val bd = DrawableUtil.writeOnDrawable(applicationContext, res, route?.label ?: "", -90 + bearing)
-                        val btmp = BitmapDescriptorFactory.fromBitmap(bd.bitmap)
-                        if (!markers.containsKey(entity.id)) {
-                            val marker = map.addMarker(MarkerOptions().position(pos).icon(btmp).anchor(0.5f, 0.5f))
-                            markers.put(entity.id, marker)
-                        } else {
-                            val marker = markers[entity.id]!!
-                            marker.position = pos
-                            marker.setIcon(btmp)
+                        route?.let {
+                            var colorRes: Int = when (it.typeLabel) {
+                                "bus" -> R.color.vehicle_bus
+                                "trolley" -> R.color.vehicle_trolley
+                                "tram" -> R.color.vehicle_tram
+                                else -> R.color.vehicle_bus
+                            }
+                            val bm = DrawableUtil.createVehiclePin(applicationContext, colorRes, it.label ?: "", -90 + bearing)
+                            val btmp = BitmapDescriptorFactory.fromBitmap(bm)
+                            if (!markers.containsKey(entity.id)) {
+                                val marker = map.addMarker(MarkerOptions().position(pos).icon(btmp).anchor(0.5f, 0.5f))
+                                markers.put(entity.id, marker)
+                            } else {
+                                val marker = markers[entity.id]!!
+                                marker.position = pos
+                                marker.setIcon(btmp)
+                            }
                         }
                     }
                 }
