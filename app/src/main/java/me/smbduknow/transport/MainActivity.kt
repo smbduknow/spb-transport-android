@@ -57,6 +57,12 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // styling Map
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_map))
+        googleMap.isIndoorEnabled = false
+        googleMap.isBuildingsEnabled = false
+        googleMap.uiSettings.isTiltGesturesEnabled = false
+
         val spb = LatLng(59.845, 30.325)
 
         mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f))

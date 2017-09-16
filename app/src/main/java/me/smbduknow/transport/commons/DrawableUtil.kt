@@ -24,10 +24,10 @@ object DrawableUtil {
         val cWidth = canvas.width
         val cHeight = canvas.height
         drawable.setBounds(0, 0, cWidth, cHeight)
-        canvas.rotate(angle, cWidth / 2f, cHeight /2f)
+        canvas.rotate(-90 + angle, cWidth / 2f, cHeight /2f)
         drawable.draw(canvas)
 
-        canvas.rotate(-angle, cWidth / 2f, cHeight /2f)
+        canvas.rotate(90 -angle, cWidth / 2f, cHeight /2f)
 
         // draw text
         val fontSize = ctx.resources.getDimensionPixelSize(R.dimen.text_pin).toFloat()
