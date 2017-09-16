@@ -4,12 +4,12 @@
     <color name="colorPrimaryDark">#0E68C5</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="vehicle_bus">#43A047</color>
-    <color name="vehicle_bus_dark">#338027</color>
-    <color name="vehicle_trolley">#1E88E5</color>
-    <color name="vehicle_trolley_dark">#0E68C5</color>
-    <color name="vehicle_tram">#FF5252</color>
-    <color name="vehicle_tram_dark">#DF3232</color>
+    <color name="vehicle_bus">#70d04b</color>
+    <color name="vehicle_bus_dark">#51a641</color>
+    <color name="vehicle_trolley">#41a6dc</color>
+    <color name="vehicle_trolley_dark">#027db6</color>
+    <color name="vehicle_tram">#fa744e</color>
+    <color name="vehicle_tram_dark">#f1351a</color>
 
     <color name="white">#ffffff</color>
     <color name="gray">#dddddd</color>
