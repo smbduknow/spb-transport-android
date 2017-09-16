@@ -102,13 +102,13 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
                     activity.runOnUiThread {
                         val route = findRoute(routeId)
                         route?.let {
-                            var colorRes: Int = when (it.typeLabel) {
-                                "bus" -> R.color.vehicle_bus
-                                "trolley" -> R.color.vehicle_trolley
-                                "tram" -> R.color.vehicle_tram
-                                else -> R.color.vehicle_bus
+                            val iconRes: Int = when (it.typeLabel) {
+                                "bus" -> R.drawable.ic_vehicle_bus
+                                "trolley" -> R.drawable.ic_vehicle_trolley
+                                "tram" -> R.drawable.ic_vehicle_tram
+                                else -> R.drawable.ic_vehicle_bus
                             }
-                            val bm = DrawableUtil.createVehiclePin(applicationContext, colorRes, it.label ?: "", -90 + bearing)
+                            val bm = DrawableUtil.createVehiclePin(applicationContext, iconRes, it.label ?: "", -90 + bearing)
                             val btmp = BitmapDescriptorFactory.fromBitmap(bm)
                             if (!markers.containsKey(entity.id)) {
                                 val marker = map.addMarker(MarkerOptions().position(pos).icon(btmp).anchor(0.5f, 0.5f))

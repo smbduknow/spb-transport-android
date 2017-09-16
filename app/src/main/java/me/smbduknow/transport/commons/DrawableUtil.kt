@@ -6,22 +6,17 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.support.annotation.ColorRes
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.annotation.DrawableRes
 import android.support.v7.content.res.AppCompatResources
 import android.text.TextPaint
 import me.smbduknow.transport.R
 
 object DrawableUtil {
 
-    private const val RES_VEHICLE = R.drawable.ic_vehicle
-
-    fun createVehiclePin(ctx: Context, @ColorRes colorRes: Int, text: String, angle: Float): Bitmap {
-        val drawable = AppCompatResources.getDrawable(ctx, RES_VEHICLE)
+    fun createVehiclePin(ctx: Context, @DrawableRes iconRes: Int, text: String, angle: Float): Bitmap {
+        val drawable = AppCompatResources.getDrawable(ctx, iconRes)
                 ?: throw Resources.NotFoundException("Vehicle icon not found")
-        val tintList = ResourcesCompat.getColorStateList(ctx.resources, colorRes, null)
-        DrawableCompat.setTintList(drawable, tintList)
+
         val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
 
         // draw icon
