@@ -13,6 +13,8 @@ import me.smbduknow.transport.R
 
 object DrawableUtil {
 
+    private val drawableCache = mutableMapOf<Int, Bitmap>()
+
     fun createVehiclePin(ctx: Context, @DrawableRes iconRes: Int, text: String, angle: Float): Bitmap {
 
         val iconBitmap = getBitmapFromVectorDrawable(ctx, iconRes)
@@ -27,7 +29,7 @@ object DrawableUtil {
             isFilterBitmap = true
         }
         val matrix = Matrix().apply{
-            setRotate(-90 + angle, iconBitmap.width / 2f, iconBitmap.height / 2f)
+            setRotate(180 + angle, iconBitmap.width / 2f, iconBitmap.height / 2f)
         }
         canvas.drawBitmap(iconBitmap, matrix, bitmapPaint)
 
@@ -46,6 +48,9 @@ object DrawableUtil {
     }
 
     private fun getBitmapFromVectorDrawable(context: Context, @DrawableRes drawableId: Int): Bitmap {
+        val cached = if(drawableCache.containsKey(drawableId)) drawableCache[drawableId] else null
+        if(cached != null) return cached
+
         var drawable = AppCompatResources.getDrawable(context, drawableId)
                 ?: throw Resources.NotFoundException("Vehicle icon not found")
 
@@ -57,6 +62,8 @@ object DrawableUtil {
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
+
+        drawableCache[drawableId] = bitmap
 
         return bitmap
     }

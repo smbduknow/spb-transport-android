@@ -15,12 +15,15 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.transit.realtime.GtfsRealtime
 import me.smbduknow.transport.commons.CSVUtil
-import me.smbduknow.transport.commons.DrawableUtil
 import me.smbduknow.transport.geo.FusedLocationProvider
 import me.smbduknow.transport.geo.LocationProvider
+import me.smbduknow.transport.commons.addMarker
+import me.smbduknow.transport.commons.recycleMarkers
 import me.smbduknow.transport.model.Route
 import java.io.IOException
 import java.net.URL
@@ -30,10 +33,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
 
     private var mMap: GoogleMap? = null
 
-    private val searchRoute = Route()
     private var routes: List<Route>? = null
-
-    private var markers: MutableMap<String, Marker> = HashMap()
 
     private var locationProvider: LocationProvider? = null
 
@@ -72,24 +72,17 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     override fun onCameraChange(cameraPosition: CameraPosition) {
         if (System.currentTimeMillis() < millis + 1000) return
 
-        val cameraBounds = mMap!!.projection.visibleRegion.latLngBounds
+        mMap?.recycleMarkers()
 
-        val it = markers.entries.iterator()
-        while (it.hasNext()) {
-            val entry = it.next()
-            val marker = entry.value
-            if (!cameraBounds.contains(marker.position)) {
-                marker.remove()
-                it.remove()
-            }
+        mMap?.let {
+            val bounds = it.projection.visibleRegion.latLngBounds
+            val coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
+                    bounds.southwest.longitude, bounds.southwest.latitude,
+                    bounds.northeast.longitude, bounds.northeast.latitude
+            )
+
+            TransportTask(this, mMap!!, coordsString).execute()
         }
-
-        val coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
-                cameraBounds.southwest.longitude, cameraBounds.southwest.latitude,
-                cameraBounds.northeast.longitude, cameraBounds.northeast.latitude
-        )
-
-        TransportTask(this, mMap!!, coordsString).execute()
     }
 
 
@@ -104,26 +97,16 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
                 for (entity in feed.entityList) {
                     val bearing = entity.vehicle.position.bearing
                     val routeId = entity.vehicle.trip.routeId
-                    val pos = LatLng(entity.vehicle.position.latitude.toDouble(), entity.vehicle.position.longitude.toDouble())
                     activity.runOnUiThread {
                         val route = findRoute(routeId)
                         route?.let {
-                            val iconRes: Int = when (it.typeLabel) {
-                                "bus" -> R.drawable.ic_vehicle_bus
-                                "trolley" -> R.drawable.ic_vehicle_trolley
-                                "tram" -> R.drawable.ic_vehicle_tram
-                                else -> R.drawable.ic_vehicle_bus
-                            }
-                            val bm = DrawableUtil.createVehiclePin(applicationContext, iconRes, it.label ?: "", -90 + bearing)
-                            val btmp = BitmapDescriptorFactory.fromBitmap(bm)
-                            if (!markers.containsKey(entity.id)) {
-                                val marker = map.addMarker(MarkerOptions().position(pos).icon(btmp).anchor(0.5f, 0.5f))
-                                markers.put(entity.id, marker)
-                            } else {
-                                val marker = markers[entity.id]!!
-                                marker.position = pos
-                                marker.setIcon(btmp)
-                            }
+                            map.addMarker(applicationContext,
+                                    entity.id,
+                                    it.typeLabel,
+                                    it.label,
+                                    entity.vehicle.position.latitude.toDouble(),
+                                    entity.vehicle.position.longitude.toDouble(),
+                                    bearing)
                         }
                     }
                 }
@@ -136,8 +119,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     }
 
     fun findRoute(routeId: String): Route? {
-        searchRoute.id = routeId
-        val pos = Collections.binarySearch(routes!!, searchRoute)
+        val pos = Collections.binarySearch(routes!!, Route(id = routeId))
         return if (pos >= 0) routes!![pos] else null
     }
 
@@ -171,7 +153,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_CODE_PERMISSION && grantResults.size >= 1) {
+        if (requestCode == REQUEST_CODE_PERMISSION && grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 permissionGranted()
             }
@@ -185,8 +167,6 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     }
 
     companion object {
-
-
         private val REQUEST_CODE_PERMISSION = 1
     }
 }
