@@ -5,11 +5,11 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="vehicle_bus">#70d04b</color>
-    <color name="vehicle_bus_dark">#51a641</color>
+    <color name="vehicle_bus_dark">#61b641</color>
     <color name="vehicle_trolley">#41a6dc</color>
-    <color name="vehicle_trolley_dark">#027db6</color>
+    <color name="vehicle_trolley_dark">#228dc6</color>
     <color name="vehicle_tram">#fa744e</color>
-    <color name="vehicle_tram_dark">#f1351a</color>
+    <color name="vehicle_tram_dark">#f1553a</color>
 
     <color name="white">#ffffff</color>
     <color name="gray">#dddddd</color>
