@@ -1,0 +1,5 @@
+<resources>
+
+    <bool name="fit_system_window">false</bool>
+
+</resources>

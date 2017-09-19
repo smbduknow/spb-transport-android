@@ -20,10 +20,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.transit.realtime.GtfsRealtime
 import me.smbduknow.transport.commons.CSVUtil
-import me.smbduknow.transport.geo.FusedLocationProvider
-import me.smbduknow.transport.geo.LocationProvider
 import me.smbduknow.transport.commons.addMarker
 import me.smbduknow.transport.commons.recycleMarkers
+import me.smbduknow.transport.geo.FusedLocationProvider
+import me.smbduknow.transport.geo.LocationProvider
 import me.smbduknow.transport.model.Route
 import java.io.IOException
 import java.net.URL
@@ -60,7 +60,6 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
         // styling Map
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_map))
         googleMap.isIndoorEnabled = false
-        googleMap.isBuildingsEnabled = false
         googleMap.uiSettings.isTiltGesturesEnabled = false
 
         val spb = LatLng(59.845, 30.325)

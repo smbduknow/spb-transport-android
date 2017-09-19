@@ -34,6 +34,7 @@ fun GoogleMap.addMarker(ctx: Context,
 
     val position = LatLng(lat, lon)
 
+
     if (!markerCache.containsKey(id)) {
         val marker = this.addMarker(MarkerOptions()
                 .position(position)

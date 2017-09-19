@@ -7,7 +7,7 @@
         "saturation": -100
       },
       {
-        "lightness": 50
+        "lightness": 60
       }
     ]
   },
@@ -19,7 +19,7 @@
         "saturation": -100
       },
       {
-        "lightness": 50
+        "lightness": 60
       }
     ]
   },
@@ -28,7 +28,7 @@
     "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#d6e9b9"
+        "color": "#d6f9c9"
       }
     ]
   },
@@ -37,7 +37,7 @@
     "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#cfeaff"
+        "color": "#dff2fb"
       }
     ]
   }
