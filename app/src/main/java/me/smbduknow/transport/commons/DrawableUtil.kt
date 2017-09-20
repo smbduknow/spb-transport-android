@@ -58,7 +58,9 @@ object DrawableUtil {
             drawable = DrawableCompat.wrap(drawable).mutate()
         }
 
-        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val size = context.resources.getDimensionPixelSize(R.dimen.pin_size)
+
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
