@@ -36,8 +36,6 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
 
     private var locationProvider: LocationProvider? = null
 
-    @Volatile private var millis: Long = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,8 +47,6 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
         routes = CSVUtil.readCsv(this)
 
         locationProvider = FusedLocationProvider(this, locationListener)
-
-        millis = System.currentTimeMillis()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -62,10 +58,6 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
     }
 
     private fun onCameraChange(bounds: LatLngBounds) {
-        if (System.currentTimeMillis() < millis + 1000) return
-
-        millis = System.currentTimeMillis()
-
         mapAdapter?.recycleMarkers()
 
         val coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",

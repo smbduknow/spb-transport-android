@@ -41,7 +41,7 @@ class MapAdapter(
         // set event listeners
         googleMap.setOnMarkerClickListener { onMarkerClick(it) }
         googleMap.setOnMapClickListener { onMapClick() }
-        googleMap.setOnCameraMoveListener { onCameraMove() }
+        googleMap.setOnCameraIdleListener { onCameraMove() }
 
         val spb = LatLng(59.845, 30.325)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f))
