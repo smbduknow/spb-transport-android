@@ -1,6 +1,6 @@
-package me.smbduknow.transport
+package me.smbduknow.transport.view
 
-import com.urworld.android.ui.base.rx.BaseViewStatePresenter
+import me.smbduknow.transport.base.rx.BaseViewStatePresenter
 import rx.Observable
 import rx.subjects.PublishSubject
 

@@ -1,4 +1,4 @@
-package me.smbduknow.transport
+package me.smbduknow.transport.view
 
 import android.Manifest
 import android.app.Activity
@@ -11,33 +11,32 @@ import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatDelegate
 import android.util.Log
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.transit.realtime.GtfsRealtime
+import me.smbduknow.transport.R
 import me.smbduknow.transport.commons.CSVUtil
-import me.smbduknow.transport.commons.addMarker
-import me.smbduknow.transport.commons.recycleMarkers
+import me.smbduknow.transport.commons.MapAdapter
 import me.smbduknow.transport.geo.FusedLocationProvider
 import me.smbduknow.transport.geo.LocationProvider
 import me.smbduknow.transport.model.Route
+import me.smbduknow.transport.model.Vehicle
 import java.io.IOException
 import java.net.URL
 import java.util.*
 
-class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
+class MainActivity : FragmentActivity(), OnMapReadyCallback {
 
-    private var mMap: GoogleMap? = null
+    private var mapAdapter : MapAdapter? = null
 
     private var routes: List<Route>? = null
 
     private var locationProvider: LocationProvider? = null
 
-    private var millis: Long = 0
+    @Volatile private var millis: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,37 +54,33 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        // styling Map
-        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_map))
-        googleMap.isIndoorEnabled = false
-        googleMap.uiSettings.isTiltGesturesEnabled = false
-
-        val spb = LatLng(59.845, 30.325)
-
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f))
-        mMap!!.setOnCameraChangeListener(this)
-    }
-
-    override fun onCameraChange(cameraPosition: CameraPosition) {
-        if (System.currentTimeMillis() < millis + 1000) return
-
-        mMap?.recycleMarkers()
-
-        mMap?.let {
-            val bounds = it.projection.visibleRegion.latLngBounds
-            val coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
-                    bounds.southwest.longitude, bounds.southwest.latitude,
-                    bounds.northeast.longitude, bounds.northeast.latitude
-            )
-
-            TransportTask(this, mMap!!, coordsString).execute()
+        mapAdapter = MapAdapter(this, googleMap).apply {
+            setOnCameraMoveListener { target, bounds, zoom, bearing ->
+                onCameraChange(bounds)
+            }
         }
     }
 
+    private fun onCameraChange(bounds: LatLngBounds) {
+        if (System.currentTimeMillis() < millis + 1000) return
 
-    inner class TransportTask(private val activity: Activity, private val map: GoogleMap, private val coordsString: String) : AsyncTask<Void, Void, Void>() {
+        millis = System.currentTimeMillis()
+
+        mapAdapter?.recycleMarkers()
+
+        val coordsString = String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
+                bounds.southwest.longitude, bounds.southwest.latitude,
+                bounds.northeast.longitude, bounds.northeast.latitude
+        )
+        TransportTask(this, mapAdapter!!, coordsString).execute()
+    }
+
+
+    inner class TransportTask(
+            private val activity: Activity,
+            private val adapter: MapAdapter,
+            private val coordsString: String
+    ) : AsyncTask<Void, Void, Void>() {
 
         override fun doInBackground(vararg params: Void): Void? {
             try {
@@ -93,26 +88,23 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
                         "bbox=" + coordsString + "&transports=bus,trolley,tram")
                 Log.d("transport", url.toString())
                 val feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream())
-                for (entity in feed.entityList) {
-                    val bearing = entity.vehicle.position.bearing
-                    val routeId = entity.vehicle.trip.routeId
-                    activity.runOnUiThread {
-                        val route = findRoute(routeId)
-                        route?.let {
-                            map.addMarker(applicationContext,
-                                    entity.id,
-                                    it.typeLabel,
-                                    it.label,
-                                    entity.vehicle.position.latitude.toDouble(),
-                                    entity.vehicle.position.longitude.toDouble(),
-                                    bearing)
+                val vehicles = feed.entityList.map {
+                            val route = findRoute(it.vehicle.trip.routeId)
+                            Vehicle(
+                                    id = it.id,
+                                    label = route?.label ?: "",
+                                    type = route?.typeLabel ?: "",
+                                    latitude = it.vehicle.position.latitude.toDouble(),
+                                    longitude = it.vehicle.position.longitude.toDouble(),
+                                    bearing = it.vehicle.position.bearing
+                            )
                         }
-                    }
+                activity.runOnUiThread {
+                    mapAdapter?.setMarkers(vehicles)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
             return null
         }
     }
@@ -134,8 +126,8 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback, GoogleMap.OnCameraC
         }
 
         override fun onReceiveLocation(location: Location) {
-                val latLng = LatLng(location.latitude, location.longitude)
-                mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.5f))
+            val latLng = LatLng(location.latitude, location.longitude)
+            mapAdapter?.moveCamera(latLng, 13.5f, 0f)
         }
 
         override fun onReceiveFailed() {

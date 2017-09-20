@@ -1,6 +1,6 @@
-package me.smbduknow.transport
+package me.smbduknow.transport.view
 
-import com.urworld.android.ui.base.mvp.RendererMvpView
+import me.smbduknow.transport.base.mvp.RendererMvpView
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
 
 

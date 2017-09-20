@@ -1,8 +1,8 @@
-package com.urworld.android.ui.base.rx
+package me.smbduknow.transport.base.rx
 
 import android.support.annotation.CallSuper
-import com.urworld.android.ui.base.mvp.RendererMvpView
 import me.smbduknow.mvpblueprint.BasePresenter
+import me.smbduknow.transport.base.mvp.RendererMvpView
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
