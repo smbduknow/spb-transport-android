@@ -108,6 +108,11 @@ class MapAdapter(
             )))
     }
 
+    fun zoomIn() = googleMap.animateCamera(CameraUpdateFactory.zoomIn())
+    fun zoomOut() = googleMap.animateCamera(CameraUpdateFactory.zoomOut())
+
+    fun findMe() = googleMap.myLocation
+
     /* private methods */
 
     private fun checkSameState(target: LatLng, zoom: Float, bearing: Float): Boolean {

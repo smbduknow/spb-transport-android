@@ -17,6 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.transit.realtime.GtfsRealtime
+import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.transport.R
 import me.smbduknow.transport.commons.CSVUtil
 import me.smbduknow.transport.commons.MapAdapter
@@ -47,6 +48,10 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
         routes = CSVUtil.readCsv(this)
 
         locationProvider = FusedLocationProvider(this, locationListener)
+
+        map_zoom_in.setOnClickListener { mapAdapter?.zoomIn() }
+        map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
+//        map_geolocation.setOnClickListener { mapAdapter?.zoomOut() }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
