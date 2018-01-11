@@ -51,7 +51,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
 
         map_zoom_in.setOnClickListener { mapAdapter?.zoomIn() }
         map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
-//        map_geolocation.setOnClickListener { mapAdapter?.zoomOut() }
+        map_geolocation.setOnClickListener { requestUserLocation() }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -124,7 +124,7 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
 
         override fun onReceiveLocation(location: Location) {
             val latLng = LatLng(location.latitude, location.longitude)
-            mapAdapter?.moveCamera(latLng, 13.5f, 0f)
+            mapAdapter?.animateCamera(latLng, 13.5f, 0f)
         }
 
         override fun onReceiveFailed() {
@@ -148,10 +148,8 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun permissionGranted() {
-        if (locationProvider != null && locationProvider!!.isAvailable) {
-            locationProvider!!.requestLastLocation()
-        }
+    private fun permissionGranted() = locationProvider?.let {
+        if(it.isAvailable) it.requestLastLocation()
     }
 
     companion object {

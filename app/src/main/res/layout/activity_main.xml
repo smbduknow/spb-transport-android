@@ -52,17 +52,16 @@
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
-        <!--<android.support.design.widget.FloatingActionButton-->
-            <!--android:id="@+id/map_geolocation"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="48dp"-->
-            <!--android:src="@drawable/ic_my_location"-->
-            <!--app:backgroundTint="@color/white"-->
-            <!--app:rippleColor="@color/gray"-->
-            <!--app:borderWidth="0dp"-->
-            <!--app:elevation="0dp"-->
-            <!--app:fabSize="mini"/>-->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/map_geolocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:src="@drawable/ic_my_location"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/gray"
+            app:borderWidth="0dp"
+            app:fabSize="mini"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
 
