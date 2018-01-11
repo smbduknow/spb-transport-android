@@ -15,3 +15,29 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
+# RxJava
+
+-dontwarn sun.misc.**
+-dontnote rx.internal.util.PlatformDependent
+
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+   long producerIndex;
+   long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+
+
+# Retrofit
+-dontwarn okio.**
+-dontwarn retrofit2.Platform$Java8
+-dontnote retrofit2.Platform
+
+-keepattributes Signature
+-keepattributes Exceptions
