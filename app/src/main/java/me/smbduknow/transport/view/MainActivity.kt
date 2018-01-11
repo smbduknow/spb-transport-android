@@ -86,16 +86,16 @@ class MainActivity : FragmentActivity(), OnMapReadyCallback {
                 Log.d("transport", url.toString())
                 val feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream())
                 val vehicles = feed.entityList.map {
-                            val route = findRoute(it.vehicle.trip.routeId)
-                            Vehicle(
-                                    id = it.id,
-                                    label = route?.label ?: "",
-                                    type = route?.typeLabel ?: "",
-                                    latitude = it.vehicle.position.latitude.toDouble(),
-                                    longitude = it.vehicle.position.longitude.toDouble(),
-                                    bearing = it.vehicle.position.bearing
-                            )
-                        }
+                    val route = findRoute(it.vehicle.trip.routeId)
+                    Vehicle(
+                            id = it.id,
+                            label = route?.label ?: "",
+                            type = route?.typeLabel ?: "",
+                            latitude = it.vehicle.position.latitude.toDouble(),
+                            longitude = it.vehicle.position.longitude.toDouble(),
+                            bearing = it.vehicle.position.bearing
+                    )
+                }
                 activity.runOnUiThread {
                     mapAdapter?.setMarkers(vehicles)
                 }
