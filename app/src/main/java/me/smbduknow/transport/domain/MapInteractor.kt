@@ -20,7 +20,7 @@ class MapInteractor {
                 "bbox=$box&transports=$transports")
         Log.d("transport", url.toString())
 
-        return Observable.fromCallable { url.openStream().use { GtfsRealtime.FeedMessage.parseFrom(it) } }
+        return Observable.fromCallable { requestVehicles(url) }
                 .map { it.entityList.map {
                     val route = findRoute(it.vehicle.trip.routeId)
                     Vehicle(
@@ -33,6 +33,8 @@ class MapInteractor {
                     )
                 } }
     }
+
+    private fun requestVehicles(url: URL) = url.openStream().use { GtfsRealtime.FeedMessage.parseFrom(it) }
 
     private fun findRoute(routeId: String): Route? {
         val pos = Collections.binarySearch(routes, Route(id = routeId))
