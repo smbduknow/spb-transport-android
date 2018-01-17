@@ -2,6 +2,8 @@ package me.smbduknow.transport
 
 import android.app.Application
 import android.support.v7.app.AppCompatDelegate
+import me.smbduknow.transport.commons.CSVUtil
+import me.smbduknow.transport.data.Session
 import timber.log.Timber
 
 
@@ -21,6 +23,8 @@ class App : Application() {
 
         //enable vector drawables
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        Session.routes = CSVUtil.readCsv(applicationContext)
 
         //init logger
         if (BuildConfig.DEBUG) {

@@ -1,7 +1,9 @@
 package me.smbduknow.transport.view
 
-import me.smbduknow.transport.base.mvp.RendererMvpView
+import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
+import me.smbduknow.transport.base.mvp.RendererMvpView
+import me.smbduknow.transport.model.Vehicle
 
 
 /**
@@ -9,9 +11,9 @@ import me.smbduknow.mvpblueprint.mvp.MvpPresenter
  * */
 interface MainMvpPresenter : MvpPresenter<MainMvpView> {
 
-    fun onGoogleServicesCheck(available: Boolean)
-
     fun onMapReady()
+
+    fun onRequestVehicles(bounds: LatLngBounds)
 
 }
 
@@ -20,17 +22,12 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
  * */
 interface MainMvpView : RendererMvpView<MainViewState> {
 
-    fun checkGoogleServices()
-
-    fun prepareMaps()
-
 }
 
 /**
  * ViewState model for Main screen
  * */
 data class MainViewState(
+        val vehicles: List<Vehicle> = emptyList(),
         val error: Throwable? = null
-) : RendererMvpView.ViewState {
-
-}
+) : RendererMvpView.ViewState
