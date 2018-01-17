@@ -15,6 +15,8 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
 
     fun onRequestVehicles(bounds: LatLngBounds)
 
+    fun onRequestUserLocation()
+
 }
 
 /**

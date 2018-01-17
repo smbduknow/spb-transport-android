@@ -3,7 +3,8 @@ package me.smbduknow.transport
 import android.app.Application
 import android.support.v7.app.AppCompatDelegate
 import me.smbduknow.transport.commons.CSVUtil
-import me.smbduknow.transport.data.Session
+import me.smbduknow.transport.data.playservices.PlayServiceProvider
+import me.smbduknow.transport.data.session.Session
 import timber.log.Timber
 
 
@@ -23,6 +24,14 @@ class App : Application() {
 
         //enable vector drawables
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        //init data-layer services
+        with(applicationContext) {
+            //init PlayServices
+            PlayServiceProvider.init(this)
+            //init Google Analytics
+            Session.routes = CSVUtil.readCsv(this)
+        }
 
         Session.routes = CSVUtil.readCsv(applicationContext)
 

@@ -1,4 +1,4 @@
-package me.smbduknow.transport.data
+package me.smbduknow.transport.data.session
 
 import me.smbduknow.transport.model.Route
 
