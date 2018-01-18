@@ -13,7 +13,7 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
 
     fun onMapReady()
 
-    fun onRequestVehicles(bounds: LatLngBounds)
+    fun onMapBoundsChanged(bounds: LatLngBounds)
 
     fun onRequestUserLocation()
 

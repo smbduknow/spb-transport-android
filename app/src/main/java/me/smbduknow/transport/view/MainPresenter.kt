@@ -6,7 +6,6 @@ import me.smbduknow.transport.domain.MapInteractor
 import rx.Observable
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
-import java.util.*
 
 
 class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
@@ -15,7 +14,7 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
     private val mapInteractor = MapInteractor()
 
     private val mapReadySubject : PublishSubject<Unit> = PublishSubject.create()
-    private val vehiclesSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
+    private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
     private val locationSubject : PublishSubject<Unit> = PublishSubject.create()
 
     override fun onCreateObservable(): Observable<MainViewState> {
@@ -23,12 +22,12 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
 //        val locationObservable = locationSubject.asObservable()
 //                .switchMap {  }
 
-        val vehiclesObservable = vehiclesSubject.asObservable()
-                .map { bounds -> String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
-                        bounds.southwest.longitude, bounds.southwest.latitude,
-                        bounds.northeast.longitude, bounds.northeast.latitude
+        val vehiclesObservable = mapBoundsSubject.asObservable()
+                .doOnNext { bounds -> mapInteractor.setBounds(
+                        bounds.southwest.latitude, bounds.southwest.longitude,
+                        bounds.northeast.latitude, bounds.northeast.longitude
                 ) }
-                .switchMap { box -> requestData(listOf("bus","trolley","tram"), box) }
+                .switchMap { requestData() }
 
         val mapReadyObservable = mapReadySubject.asObservable()
                 .first()
@@ -39,12 +38,11 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
 
     override fun onMapReady() = mapReadySubject.onNext(null)
 
-    override fun onRequestVehicles(bounds: LatLngBounds) = vehiclesSubject.onNext(bounds)
+    override fun onMapBoundsChanged(bounds: LatLngBounds) = mapBoundsSubject.onNext(bounds)
 
     override fun onRequestUserLocation() = locationSubject.onNext(null)
 
-    private fun requestData(types: List<String>, box: String): Observable<MainViewState>
-            = mapInteractor.getVehicles(types, box)
+    private fun requestData() = mapInteractor.getVehicles()
             .map { vehicles -> MainViewState(vehicles) }
             .startWith( MainViewState() )
             .onErrorReturn { error -> MainViewState(emptyList(), error) }

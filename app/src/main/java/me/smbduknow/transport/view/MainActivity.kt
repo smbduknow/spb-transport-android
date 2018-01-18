@@ -54,8 +54,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapAdapter = MapAdapter(this, googleMap).apply {
-            setOnCameraMoveListener { target, bounds, zoom, bearing ->
-                presenter?.onRequestVehicles(bounds)
+            setOnCameraMoveListener { _, bounds, _, _ ->
+                presenter?.onMapBoundsChanged(bounds)
             }
         }
         presenter?.onMapReady()
