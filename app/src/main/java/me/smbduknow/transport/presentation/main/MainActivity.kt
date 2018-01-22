@@ -1,4 +1,4 @@
-package me.smbduknow.transport.view
+package me.smbduknow.transport.presentation.main
 
 import android.Manifest
 import android.location.Location
@@ -11,10 +11,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.mvpblueprint.BasePresenterActivity
 import me.smbduknow.mvpblueprint.PresenterFactory
 import me.smbduknow.transport.R
-import me.smbduknow.transport.commons.MapAdapter
-import me.smbduknow.transport.commons.PermissedAction
-import me.smbduknow.transport.geo.FusedLocationProvider
-import me.smbduknow.transport.geo.LocationProvider
+import me.smbduknow.transport.presentation.misc.PermissedAction
+import me.smbduknow.transport.presentation.geo.FusedLocationProvider
+import me.smbduknow.transport.presentation.geo.LocationProvider
 
 class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnMapReadyCallback, MainMvpView {
 
@@ -45,7 +44,7 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         nearbyAction = PermissedAction(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 { requestUserLocation() },
-                {  } // TODO toast with error message
+                { } // TODO toast with error message
         )
     }
 

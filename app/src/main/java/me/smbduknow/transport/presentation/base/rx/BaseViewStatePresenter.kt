@@ -1,8 +1,8 @@
-package me.smbduknow.transport.base.rx
+package me.smbduknow.transport.presentation.base.rx
 
 import android.support.annotation.CallSuper
 import me.smbduknow.mvpblueprint.BasePresenter
-import me.smbduknow.transport.base.mvp.RendererMvpView
+import me.smbduknow.transport.presentation.base.mvp.RendererMvpView
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers

@@ -1,4 +1,4 @@
-package me.smbduknow.transport.commons
+package me.smbduknow.transport.presentation.misc
 
 import android.content.Context
 import com.google.android.gms.maps.GoogleMap

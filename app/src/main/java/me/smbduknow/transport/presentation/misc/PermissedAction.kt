@@ -1,4 +1,4 @@
-package me.smbduknow.transport.commons;
+package me.smbduknow.transport.presentation.misc;
 
 import android.app.Activity
 import android.content.pm.PackageManager

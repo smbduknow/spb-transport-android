@@ -1,5 +1,6 @@
-package me.smbduknow.transport.geo
+package me.smbduknow.transport.presentation.geo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
@@ -34,6 +35,7 @@ class FusedLocationProvider(context: Context, private val mListener: LocationPro
         }
 
 
+    @SuppressLint("MissingPermission")
     override fun requestLastLocation() {
         try {
             if (locationClient != null && locationClient.isConnected && mListener != null)
@@ -43,6 +45,7 @@ class FusedLocationProvider(context: Context, private val mListener: LocationPro
 
     }
 
+    @SuppressLint("MissingPermission")
     override fun requestLocationUpdates() {
         if (locationClient!!.isConnected) {
             val locationRequest = LocationRequest()

@@ -1,61 +1,35 @@
 package me.smbduknow.transport.domain
 
-import com.google.transit.realtime.GtfsRealtime
-import me.smbduknow.transport.data.network.VehiclesApi
-import me.smbduknow.transport.data.playservices.PlayServiceProvider
-import me.smbduknow.transport.data.session.Session
-import me.smbduknow.transport.model.MapBounds
-import me.smbduknow.transport.model.Route
-import me.smbduknow.transport.model.Vehicle
-import rx.Observable
-import java.util.*
+import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.MapScope
+import me.smbduknow.transport.domain.model.Vehicle
+import me.smbduknow.transport.domain.repository.TransportRepository
+import me.smbduknow.transport.domain.repository.UserLocationRepository
 
-class MapInteractor {
+class MapInteractor(
+        private val transportRepository: TransportRepository,
+        private val userLocationRepository: UserLocationRepository
+) {
 
-    private val api = VehiclesApi()
-    private val routes = Session.routes
+    private var bounds = MapScope(
+            Coordinates(0.0, 0.0),
+            Coordinates(0.0, 0.0)
+    )
+    private var vehicleTypes: List<String>
+            = listOf(Vehicle.TYPE_BUS, Vehicle.TYPE_TRAM, Vehicle.TYPE_TROLLEY)
 
-    private var bounds = MapBounds(0.0, 0.0, 0.0, 0.0)
-    private var vehicleTypes: List<String> = listOf("bus","trolley","tram")
 
-    fun setBounds(swLat:Double, swLon: Double,
-                  neLat:Double, neLon: Double) {
-        bounds = MapBounds(swLat, swLon, neLat, neLon)
+    fun setBounds(sw: Coordinates, ne: Coordinates) {
+        bounds = MapScope(sw, ne)
     }
 
     fun setVehicleTypes(types: List<String>) {
         vehicleTypes = types
     }
 
-    fun getVehicles(): Observable<List<Vehicle>> {
-        return api.getVehicles(
-                bounds.swLat, bounds.swLon,
-                bounds.neLat, bounds.neLon,
-                vehicleTypes)
-                .map { it.entityList.map { mapVehicle(it) } }
-    }
 
-    fun getUserLocation(): Observable<Pair<Double, Double>> {
-        return PlayServiceProvider.getLastLocation()
-                .map { Pair(it.latitude, it.longitude) }
-    }
+    fun getVehicles() = transportRepository.getAllVehicles(bounds, vehicleTypes)
 
-
-    private fun mapVehicle(entity: GtfsRealtime.FeedEntity): Vehicle {
-        val route = findRoute(entity.vehicle.trip.routeId)
-        return Vehicle(
-                id = entity.id,
-                label = route?.label ?: "",
-                type = route?.typeLabel ?: "",
-                latitude = entity.vehicle.position.latitude.toDouble(),
-                longitude = entity.vehicle.position.longitude.toDouble(),
-                bearing = entity.vehicle.position.bearing
-        )
-    }
-
-    private fun findRoute(routeId: String): Route? {
-        val pos = Collections.binarySearch(routes, Route(id = routeId))
-        return if (pos >= 0) routes[pos] else null
-    }
+    fun getUserLocation() = userLocationRepository.getUserLocation()
 
 }

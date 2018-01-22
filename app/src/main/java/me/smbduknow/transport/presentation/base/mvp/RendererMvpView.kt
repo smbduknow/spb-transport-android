@@ -1,4 +1,4 @@
-package me.smbduknow.transport.base.mvp
+package me.smbduknow.transport.presentation.base.mvp
 
 import android.support.annotation.UiThread
 import me.smbduknow.mvpblueprint.mvp.MvpView

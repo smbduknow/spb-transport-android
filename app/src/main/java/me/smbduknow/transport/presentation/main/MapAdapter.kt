@@ -1,4 +1,4 @@
-package me.smbduknow.transport.commons
+package me.smbduknow.transport.presentation.main
 
 import android.Manifest
 import android.content.Context
@@ -8,7 +8,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import me.smbduknow.transport.R
-import me.smbduknow.transport.model.Vehicle
+import me.smbduknow.transport.domain.model.Vehicle
+import me.smbduknow.transport.presentation.misc.addMarker
+import me.smbduknow.transport.presentation.misc.updateMarker
 
 
 class MapAdapter(

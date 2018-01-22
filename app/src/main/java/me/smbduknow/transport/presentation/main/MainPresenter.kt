@@ -1,8 +1,11 @@
-package me.smbduknow.transport.view
+package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLngBounds
-import me.smbduknow.transport.base.rx.BaseViewStatePresenter
+import me.smbduknow.transport.data.TransportRepositoryImpl
+import me.smbduknow.transport.data.UserLocationRepositoryImpl
 import me.smbduknow.transport.domain.MapInteractor
+import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
 import rx.Observable
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
@@ -11,7 +14,11 @@ import rx.subjects.PublishSubject
 class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
         MainMvpPresenter {
 
-    private val mapInteractor = MapInteractor()
+    // TODO DI with Dagger
+    private val mapInteractor = MapInteractor(
+            TransportRepositoryImpl(),
+            UserLocationRepositoryImpl()
+    )
 
     private val mapReadySubject : PublishSubject<Unit> = PublishSubject.create()
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
@@ -24,8 +31,8 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
 
         val vehiclesObservable = mapBoundsSubject.asObservable()
                 .doOnNext { bounds -> mapInteractor.setBounds(
-                        bounds.southwest.latitude, bounds.southwest.longitude,
-                        bounds.northeast.latitude, bounds.northeast.longitude
+                        Coordinates(bounds.southwest.latitude, bounds.southwest.longitude),
+                        Coordinates(bounds.northeast.latitude, bounds.northeast.longitude)
                 ) }
                 .switchMap { requestData() }
 

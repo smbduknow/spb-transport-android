@@ -1,9 +1,9 @@
-package me.smbduknow.transport.view
+package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
-import me.smbduknow.transport.base.mvp.RendererMvpView
-import me.smbduknow.transport.model.Vehicle
+import me.smbduknow.transport.domain.model.Vehicle
+import me.smbduknow.transport.presentation.base.mvp.RendererMvpView
 
 
 /**

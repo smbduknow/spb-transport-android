@@ -2,7 +2,7 @@ package me.smbduknow.transport
 
 import android.app.Application
 import android.support.v7.app.AppCompatDelegate
-import me.smbduknow.transport.commons.CSVUtil
+import me.smbduknow.transport.data.assets.AssetsProvider
 import me.smbduknow.transport.data.playservices.PlayServiceProvider
 import me.smbduknow.transport.data.session.Session
 import timber.log.Timber
@@ -30,10 +30,8 @@ class App : Application() {
             //init PlayServices
             PlayServiceProvider.init(this)
             //init Google Analytics
-            Session.routes = CSVUtil.readCsv(this)
+            Session.routes = AssetsProvider.readRoutes(this)
         }
-
-        Session.routes = CSVUtil.readCsv(applicationContext)
 
         //init logger
         if (BuildConfig.DEBUG) {

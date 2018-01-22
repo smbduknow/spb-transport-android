@@ -1,4 +1,4 @@
-package me.smbduknow.transport.geo
+package me.smbduknow.transport.presentation.geo
 
 import android.location.Location
 

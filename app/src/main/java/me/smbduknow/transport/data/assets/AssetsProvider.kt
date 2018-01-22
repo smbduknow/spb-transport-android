@@ -1,12 +1,12 @@
-package me.smbduknow.transport.commons
+package me.smbduknow.transport.data.assets
 
 import android.content.Context
-import me.smbduknow.transport.model.Route
+import me.smbduknow.transport.domain.model.Route
 import java.util.*
 
-object CSVUtil {
+object AssetsProvider {
 
-    fun readCsv(context: Context): List<Route> {
+    fun readRoutes(context: Context): List<Route> {
         val resultList = ArrayList<Route>()
         val assetManager = context.assets
 

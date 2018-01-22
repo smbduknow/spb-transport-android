@@ -1,6 +1,6 @@
 package me.smbduknow.transport.data.session
 
-import me.smbduknow.transport.model.Route
+import me.smbduknow.transport.domain.model.Route
 
 object Session {
 
