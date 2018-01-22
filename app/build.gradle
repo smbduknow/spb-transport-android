@@ -4,23 +4,19 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     
-    compileSdkVersion 25
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "me.smbduknow.transport"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
         vectorDrawables.useSupportLibrary = true
 
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
     }
 
     packagingOptions {
@@ -46,8 +42,8 @@ dependencies {
     final rxJavaVersion = '1.2.7'
     final rxAndroidVersion = '1.2.1'
 
-    final supportLibraryVersion = '25.4.0'
-    final googlePlayVersion = '11.0.4'
+    final supportLibraryVersion = '27.0.2'
+    final googlePlayVersion = '11.8.0'
 
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
