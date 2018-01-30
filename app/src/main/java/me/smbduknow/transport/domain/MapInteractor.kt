@@ -5,11 +5,14 @@ import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Vehicle
 import me.smbduknow.transport.domain.repository.TransportRepository
 import me.smbduknow.transport.domain.repository.UserLocationRepository
+import javax.inject.Inject
 
-class MapInteractor(
-        private val transportRepository: TransportRepository,
-        private val userLocationRepository: UserLocationRepository
-) {
+class MapInteractor {
+
+    @Inject
+    lateinit var transportRepository: TransportRepository
+    @Inject
+    lateinit var userLocationRepository: UserLocationRepository
 
     private var bounds = MapScope(
             Coordinates(0.0, 0.0),

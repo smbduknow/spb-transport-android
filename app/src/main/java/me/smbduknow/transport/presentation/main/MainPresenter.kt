@@ -1,8 +1,8 @@
 package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLngBounds
-import me.smbduknow.transport.data.TransportRepositoryImpl
-import me.smbduknow.transport.data.UserLocationRepositoryImpl
+import me.smbduknow.transport.app.DaggerAppComponent
+import me.smbduknow.transport.app.RepositoryModule
 import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
@@ -14,15 +14,18 @@ import rx.subjects.PublishSubject
 class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
         MainMvpPresenter {
 
-    // TODO DI with Dagger
-    private val mapInteractor = MapInteractor(
-            TransportRepositoryImpl(),
-            UserLocationRepositoryImpl()
-    )
+    private val mapInteractor = MapInteractor()
 
     private val mapReadySubject : PublishSubject<Unit> = PublishSubject.create()
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
     private val locationSubject : PublishSubject<Unit> = PublishSubject.create()
+
+    init {
+        DaggerAppComponent.builder()
+                .repositoryModule(RepositoryModule())
+                .build()
+                .injectTo(mapInteractor)
+    }
 
     override fun onCreateObservable(): Observable<MainViewState> {
 
@@ -44,9 +47,7 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
     }
 
     override fun onMapReady() = mapReadySubject.onNext(null)
-
     override fun onMapBoundsChanged(bounds: LatLngBounds) = mapBoundsSubject.onNext(bounds)
-
     override fun onRequestUserLocation() = locationSubject.onNext(null)
 
     private fun requestData() = mapInteractor.getVehicles()

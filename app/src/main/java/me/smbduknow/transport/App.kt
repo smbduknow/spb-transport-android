@@ -10,6 +10,10 @@ import timber.log.Timber
 
 class App : Application() {
 
+//    companion object {
+//        lateinit var appComponent: AppComponent
+//    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -27,11 +31,15 @@ class App : Application() {
 
         //init data-layer services
         with(applicationContext) {
-            //init PlayServices
             PlayServiceProvider.init(this)
-            //init Google Analytics
-            Session.routes = AssetsProvider.readRoutes(this)
+            Session.routes = AssetsProvider.getRoutes(this)
         }
+
+//        appComponent = DaggerAppComponent.builder()
+//                .appModule(AppModule(this))
+//                .build()
+//
+//        appComponent.injectTo(MapInteractor())
 
         //init logger
         if (BuildConfig.DEBUG) {

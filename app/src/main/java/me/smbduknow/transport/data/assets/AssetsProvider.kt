@@ -6,7 +6,7 @@ import java.util.*
 
 object AssetsProvider {
 
-    fun readRoutes(context: Context): List<Route> {
+    fun getRoutes(context: Context): List<Route> {
         val resultList = ArrayList<Route>()
         val assetManager = context.assets
 
