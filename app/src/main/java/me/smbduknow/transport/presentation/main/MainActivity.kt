@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.mvpblueprint.BasePresenterActivity
 import me.smbduknow.mvpblueprint.PresenterFactory
+import me.smbduknow.transport.App
 import me.smbduknow.transport.R
 import me.smbduknow.transport.presentation.misc.PermissedAction
 import me.smbduknow.transport.presentation.geo.FusedLocationProvider
@@ -46,6 +47,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
                 { requestUserLocation() },
                 { } // TODO toast with error message
         )
+
+        App.graph.injectTo(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

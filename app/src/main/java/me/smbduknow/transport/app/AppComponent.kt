@@ -2,12 +2,16 @@ package me.smbduknow.transport.app
 
 import dagger.Component
 import me.smbduknow.transport.domain.MapInteractor
+import me.smbduknow.transport.presentation.main.MainActivity
 import javax.inject.Singleton
 
-@Component(modules = [(RepositoryModule::class)])
+@Component(modules = [
+    AppModule::class,
+    RepositoryModule::class
+])
 @Singleton
-interface MapComponent {
+interface AppComponent {
 
-    fun injectTo(interactor: MapInteractor)
+    fun injectTo(activity: MainActivity)
 
 }

@@ -1,8 +1,6 @@
 package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLngBounds
-import me.smbduknow.transport.app.DaggerAppComponent
-import me.smbduknow.transport.app.RepositoryModule
 import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
@@ -20,12 +18,6 @@ class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
     private val locationSubject : PublishSubject<Unit> = PublishSubject.create()
 
-    init {
-        DaggerAppComponent.builder()
-                .repositoryModule(RepositoryModule())
-                .build()
-                .injectTo(mapInteractor)
-    }
 
     override fun onCreateObservable(): Observable<MainViewState> {
 
