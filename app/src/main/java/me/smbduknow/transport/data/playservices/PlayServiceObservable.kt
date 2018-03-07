@@ -10,6 +10,7 @@ import rx.Observer
 import rx.Subscriber
 import rx.subscriptions.Subscriptions
 
+
 abstract class PlayServiceObservable<T>(
         val ctx: Context,
         vararg services: Api<out Api.ApiOptions.NotRequiredOptions>

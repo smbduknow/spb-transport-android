@@ -1,0 +1,17 @@
+apply plugin: 'kotlin'
+
+dependencies {
+
+    final rxJavaVersion = '1.2.7'
+
+    // kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    // rx
+    compile "io.reactivex:rxjava:$rxJavaVersion"
+
+    // Dagger
+    compile 'com.google.dagger:dagger:2.8'
+    kapt 'com.google.dagger:dagger-compiler:2.8'
+
+}
