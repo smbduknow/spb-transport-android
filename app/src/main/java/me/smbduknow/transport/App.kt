@@ -2,9 +2,9 @@ package me.smbduknow.transport
 
 import android.app.Application
 import android.support.v7.app.AppCompatDelegate
-import me.smbduknow.transport.app.AppComponent
-import me.smbduknow.transport.app.AppModule
-import me.smbduknow.transport.app.DaggerAppComponent
+import me.smbduknow.transport.di.AppComponent
+import me.smbduknow.transport.di.AppModule
+import me.smbduknow.transport.di.DaggerAppComponent
 import timber.log.Timber
 
 

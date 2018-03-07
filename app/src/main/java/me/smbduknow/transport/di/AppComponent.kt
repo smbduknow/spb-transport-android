@@ -1,4 +1,4 @@
-package me.smbduknow.transport.app
+package me.smbduknow.transport.di
 
 import dagger.Component
 import me.smbduknow.transport.presentation.main.MainActivity

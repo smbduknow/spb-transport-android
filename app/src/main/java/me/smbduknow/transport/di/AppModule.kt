@@ -1,4 +1,4 @@
-package me.smbduknow.transport.app
+package me.smbduknow.transport.di
 
 import android.app.Application
 import android.content.Context

@@ -1,4 +1,4 @@
-package me.smbduknow.transport.app
+package me.smbduknow.transport.di
 
 import dagger.Module
 import dagger.Provides
