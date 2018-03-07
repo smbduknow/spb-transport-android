@@ -1,18 +1,18 @@
 package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLngBounds
-import me.smbduknow.transport.domain.MapInteractor
+import me.smbduknow.transport.domain.IMapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
 import rx.Observable
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
+import javax.inject.Inject
 
 
-class MainPresenter : BaseViewStatePresenter<MainMvpView, MainViewState>(),
-        MainMvpPresenter {
-
-    private val mapInteractor = MapInteractor()
+class MainPresenter @Inject constructor (
+        private val mapInteractor: IMapInteractor
+) : BaseViewStatePresenter<MainMvpView, MainViewState>(), MainMvpPresenter {
 
     private val mapReadySubject : PublishSubject<Unit> = PublishSubject.create()
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()

@@ -5,10 +5,6 @@ import android.support.v7.app.AppCompatDelegate
 import me.smbduknow.transport.app.AppComponent
 import me.smbduknow.transport.app.AppModule
 import me.smbduknow.transport.app.DaggerAppComponent
-import me.smbduknow.transport.app.RepositoryModule
-import me.smbduknow.transport.data.assets.AssetsProvider
-import me.smbduknow.transport.data.playservices.PlayServiceProvider
-import me.smbduknow.transport.data.session.Session
 import timber.log.Timber
 
 
@@ -33,18 +29,9 @@ class App : Application() {
         //enable vector drawables
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        //init data-layer services
-        with(applicationContext) {
-            PlayServiceProvider.init(this)
-            Session.routes = AssetsProvider.getRoutes(this)
-        }
-
         graph = DaggerAppComponent.builder()
                 .appModule(AppModule(this))
-                .repositoryModule(RepositoryModule())
                 .build()
-//
-//        appComponent.injectTo(MapInteractor())
 
         //init logger
         if (BuildConfig.DEBUG) {

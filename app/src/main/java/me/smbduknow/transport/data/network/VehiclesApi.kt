@@ -4,8 +4,10 @@ import com.google.transit.realtime.GtfsRealtime
 import rx.Observable
 import timber.log.Timber
 import java.net.URL
+import javax.inject.Inject
 
-class VehiclesApi {
+
+class VehiclesApi @Inject constructor() {
 
     private val VEHICLE_URL = "http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle"
 

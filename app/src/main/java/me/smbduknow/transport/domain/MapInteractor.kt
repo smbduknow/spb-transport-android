@@ -7,12 +7,10 @@ import me.smbduknow.transport.domain.repository.TransportRepository
 import me.smbduknow.transport.domain.repository.UserLocationRepository
 import javax.inject.Inject
 
-class MapInteractor {
-
-    @Inject
-    lateinit var transportRepository: TransportRepository
-    @Inject
-    lateinit var userLocationRepository: UserLocationRepository
+class MapInteractor @Inject constructor(
+        private val transportRepository: TransportRepository,
+        private val userLocationRepository: UserLocationRepository
+) : IMapInteractor {
 
     private var bounds = MapScope(
             Coordinates(0.0, 0.0),
@@ -22,7 +20,7 @@ class MapInteractor {
             = listOf(Vehicle.TYPE_BUS, Vehicle.TYPE_TRAM, Vehicle.TYPE_TROLLEY)
 
 
-    fun setBounds(sw: Coordinates, ne: Coordinates) {
+    override fun setBounds(sw: Coordinates, ne: Coordinates) {
         bounds = MapScope(sw, ne)
     }
 
@@ -31,7 +29,7 @@ class MapInteractor {
     }
 
 
-    fun getVehicles() = transportRepository.getAllVehicles(bounds, vehicleTypes)
+    override fun getVehicles() = transportRepository.getAllVehicles(bounds, vehicleTypes)
 
     fun getUserLocation() = userLocationRepository.getUserLocation()
 

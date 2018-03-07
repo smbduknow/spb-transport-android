@@ -1,19 +1,22 @@
 package me.smbduknow.transport.data
 
 import com.google.transit.realtime.GtfsRealtime
+import me.smbduknow.transport.data.assets.RoutesProvider
 import me.smbduknow.transport.data.network.VehiclesApi
-import me.smbduknow.transport.data.session.Session
 import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Route
 import me.smbduknow.transport.domain.model.Vehicle
 import me.smbduknow.transport.domain.repository.TransportRepository
 import rx.Observable
 import java.util.*
+import javax.inject.Inject
 
-class TransportRepositoryImpl : TransportRepository {
+class TransportRepositoryImpl @Inject constructor(
+        private val remote: VehiclesApi,
+        private val routesProvider: RoutesProvider
+) : TransportRepository {
 
-    private val api = VehiclesApi()
-    private val session = Session
+    val routes = routesProvider.getRoutes()
 
     override fun getAllVehicles(mapScope: MapScope, types: List<String>): Observable<List<Vehicle>> {
 
@@ -22,7 +25,7 @@ class TransportRepositoryImpl : TransportRepository {
         }
         val transports = types.joinToString(",")
 
-        return api.getVehicles(box, transports)
+        return remote.getVehicles(box, transports)
                 .map { it.entityList.map { mapVehicle(it) } }
     }
 
@@ -41,8 +44,8 @@ class TransportRepositoryImpl : TransportRepository {
     }
 
     private fun findRoute(routeId: String): Route? {
-        val pos = Collections.binarySearch(session.routes, Route(id = routeId))
-        return if (pos >= 0) session.routes[pos] else null
+        val pos = Collections.binarySearch(routes, Route(id = routeId))
+        return if (pos >= 0) routes[pos] else null
     }
 
 }

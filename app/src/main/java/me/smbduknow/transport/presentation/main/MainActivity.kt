@@ -7,26 +7,31 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import dagger.Lazy
 import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.mvpblueprint.BasePresenterActivity
 import me.smbduknow.mvpblueprint.PresenterFactory
 import me.smbduknow.transport.App
 import me.smbduknow.transport.R
-import me.smbduknow.transport.presentation.misc.PermissedAction
 import me.smbduknow.transport.presentation.geo.FusedLocationProvider
 import me.smbduknow.transport.presentation.geo.LocationProvider
+import me.smbduknow.transport.presentation.misc.PermissedAction
+import javax.inject.Inject
+
 
 class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnMapReadyCallback, MainMvpView {
 
     private var mapAdapter : MapAdapter? = null
 
-    private var locationProvider: LocationProvider? = null
-
+    private lateinit var locationProvider: LocationProvider
 
     private lateinit var nearbyAction: PermissedAction
 
+    @Inject
+    lateinit var lazyPresenter: Lazy<MainMvpPresenter>
+
     override fun onCreatePresenterFactory() = object : PresenterFactory<MainMvpPresenter>() {
-        override fun create() = MainPresenter()
+        override fun create() = lazyPresenter.get()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +79,7 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
     // TODO separate this logic from UI
 
-    private fun requestUserLocation() = locationProvider?.let {
+    private fun requestUserLocation() = locationProvider.let {
         if(it.isAvailable) it.requestLastLocation()
     }
 

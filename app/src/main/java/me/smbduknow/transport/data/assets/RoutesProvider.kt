@@ -3,14 +3,17 @@ package me.smbduknow.transport.data.assets
 import android.content.Context
 import me.smbduknow.transport.domain.model.Route
 import java.util.*
+import javax.inject.Inject
 
-object AssetsProvider {
 
-    fun getRoutes(context: Context): List<Route> {
-        val resultList = ArrayList<Route>()
-        val assetManager = context.assets
+class RoutesProvider @Inject constructor(
+        context: Context
+) {
 
-        assetManager.open("routes.txt").bufferedReader().use { reader ->
+    private val cachedRoutes = ArrayList<Route>()
+
+    init {
+        context.assets.open("routes.txt").bufferedReader().use { reader ->
             var line: String? = reader.readLine()
             while (line != null) {
                 val rowData = line.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -20,13 +23,13 @@ object AssetsProvider {
                         type = rowData[4],
                         typeLabel = rowData[5]
                 )
-                resultList.add(route)
+                cachedRoutes.add(route)
                 line = reader.readLine()
             }
         }
-
-        Collections.sort(resultList)
-        return resultList
+        cachedRoutes.sort()
     }
+
+    fun getRoutes(): List<Route> = cachedRoutes.toList()
 
 }

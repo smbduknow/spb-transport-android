@@ -2,18 +2,13 @@ package me.smbduknow.transport.data.playservices
 
 import android.content.Context
 import me.smbduknow.transport.data.playservices.location.LocationProvider
-import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 
-object PlayServiceProvider {
+class PlayServiceProvider @Inject constructor(
+        private val context: Context
+) {
 
-    private lateinit var ctxRef: WeakReference<Context>
-
-    fun init(ctx: Context) {
-        ctxRef = WeakReference(ctx)
-    }
-
-
-    fun getLastLocation() = LocationProvider.createLastLocationObservable(ctxRef.get()!!)
+    fun getLastLocation() = LocationProvider.createLastLocationObservable(context)
 
 }
