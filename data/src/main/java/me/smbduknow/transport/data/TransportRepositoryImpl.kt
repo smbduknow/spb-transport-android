@@ -13,10 +13,10 @@ import javax.inject.Inject
 
 class TransportRepositoryImpl @Inject constructor(
         private val remote: VehiclesApi,
-        private val routesProvider: RoutesProvider
+        routesProvider: RoutesProvider
 ) : TransportRepository {
 
-    val routes = routesProvider.getRoutes()
+    private val routes = routesProvider.getRoutes()
 
     override fun getAllVehicles(mapScope: MapScope, types: List<String>): Observable<List<Vehicle>> {
 
