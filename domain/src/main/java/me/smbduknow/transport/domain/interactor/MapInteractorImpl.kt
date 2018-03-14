@@ -1,5 +1,6 @@
-package me.smbduknow.transport.domain
+package me.smbduknow.transport.domain.interactor
 
+import me.smbduknow.transport.domain.IMapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
 import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Vehicle
@@ -7,7 +8,7 @@ import me.smbduknow.transport.domain.repository.TransportRepository
 import me.smbduknow.transport.domain.repository.UserLocationRepository
 import javax.inject.Inject
 
-class MapInteractor @Inject constructor(
+class MapInteractorImpl @Inject constructor(
         private val transportRepository: TransportRepository,
         private val userLocationRepository: UserLocationRepository
 ) : IMapInteractor {
