@@ -2,6 +2,7 @@ package me.smbduknow.transport.presentation.main
 
 import android.Manifest
 import android.os.Bundle
+import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -41,7 +42,7 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
         nearbyAction = PermissedAction(Manifest.permission.ACCESS_FINE_LOCATION,
                 { presenter?.onRequestUserLocation() },
-                { } // TODO toast with error message
+                { Toast.makeText(this, "Permission not granted", Toast.LENGTH_SHORT).show() }
         )
 
         App.graph.injectTo(this)
