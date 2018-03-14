@@ -1,8 +1,8 @@
 package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
+import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Vehicle
 import me.smbduknow.transport.presentation.base.mvp.RendererMvpView
 
@@ -14,7 +14,7 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
 
     fun onMapReady()
 
-    fun onMapBoundsChanged(bounds: LatLngBounds)
+    fun onMapBoundsChanged(scope: MapScope)
 
     fun onRequestUserLocation()
 
@@ -31,7 +31,8 @@ interface MainMvpView : RendererMvpView<MainViewState> {
  * ViewState model for Main screen
  * */
 data class MainViewState(
-        val userLocation: LatLng,
+        val mapScope: MapScope,
+        val userLocation: LatLng? = null,
         val vehicles: List<Vehicle> = emptyList(),
         val error: Throwable? = null
 ) : RendererMvpView.ViewState

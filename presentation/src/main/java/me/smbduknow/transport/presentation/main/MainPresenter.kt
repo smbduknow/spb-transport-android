@@ -1,9 +1,9 @@
 package me.smbduknow.transport.presentation.main
 
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
 import rx.Observable
 import rx.schedulers.Schedulers
@@ -17,7 +17,7 @@ class MainPresenter @Inject constructor (
 ) : BaseViewStatePresenter<MainMvpView, MainViewState>(), MainMvpPresenter {
 
     private val mapReadySubject : PublishSubject<Unit> = PublishSubject.create()
-    private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
+    private val mapScopeSubject : PublishSubject<MapScope> = PublishSubject.create()
     private val locationSubject : PublishSubject<Unit> = PublishSubject.create()
 
 
@@ -26,37 +26,39 @@ class MainPresenter @Inject constructor (
         val locationObservable = locationSubject.asObservable()
                 .switchMap { requestLocation() }
 
-        val vehiclesObservable = mapBoundsSubject.asObservable()
+        val vehiclesObservable = mapScopeSubject.asObservable()
                 .debounce(200, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
-                .doOnNext { bounds -> mapInteractor.setBounds(
-                        Coordinates(bounds.southwest.latitude, bounds.southwest.longitude),
-                        Coordinates(bounds.northeast.latitude, bounds.northeast.longitude)
-                ) }
+                .doOnNext { mapInteractor.setMapScope(it) }
                 .switchMap { requestData() }
 
-        val mapReadyObservable = mapReadySubject.asObservable()
+        val initObservable = mapReadySubject.asObservable()
                 .first()
-                .map { MainViewState(LatLng(59.9342802, 30.3350986)) }
+                .map { MainViewState(MapScope(
+                        Coordinates(59.9342802, 30.3350986),
+                        Coordinates(59.9342802, 30.3350986),
+                        Coordinates(59.9342802, 30.3350986),
+                        0f, 13.5f
+                )) }
 
-        return Observable.concat(mapReadyObservable, Observable.merge(
+        return initObservable.concatWith(Observable.merge(
                 vehiclesObservable,
                 locationObservable
         ))
     }
 
     override fun onMapReady() = mapReadySubject.onNext(null)
-    override fun onMapBoundsChanged(bounds: LatLngBounds) = mapBoundsSubject.onNext(bounds)
+    override fun onMapBoundsChanged(scope: MapScope) = mapScopeSubject.onNext(scope)
     override fun onRequestUserLocation() = locationSubject.onNext(null)
 
     private fun requestData() = mapInteractor.getVehicles()
-            .map { vehicles -> MainViewState(getState().userLocation, vehicles) }
-            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
+            .map { vehicles -> MainViewState(getState().mapScope, getState().userLocation, vehicles) }
+            .onErrorReturn { error -> MainViewState(getState().mapScope, getState().userLocation, getState().vehicles, error) }
             .subscribeOn(Schedulers.io())
 
     private fun requestLocation() = mapInteractor.getUserLocation()
             .map { LatLng(it.lat, it.lon) }
-            .map { location -> MainViewState(location, getState().vehicles) }
-            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
+            .map { location -> MainViewState(getState().mapScope, location, getState().vehicles) }
+            .onErrorReturn { error -> MainViewState(getState().mapScope, getState().userLocation, getState().vehicles, error) }
             .subscribeOn(Schedulers.io())
 }

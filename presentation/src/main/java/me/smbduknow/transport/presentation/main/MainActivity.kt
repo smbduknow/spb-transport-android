@@ -6,12 +6,15 @@ import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import dagger.Lazy
 import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.mvpblueprint.BasePresenterActivity
 import me.smbduknow.mvpblueprint.PresenterFactory
 import me.smbduknow.transport.App
 import me.smbduknow.transport.R
+import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.presentation.misc.PermissedAction
 import javax.inject.Inject
 
@@ -50,8 +53,13 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapAdapter = MapAdapter(this, googleMap).apply {
-            setOnCameraMoveListener { _, bounds, _, _ ->
-                presenter?.onMapBoundsChanged(bounds)
+            setOnCameraMoveListener { target, bounds, zoom, bearing ->
+                presenter?.onMapBoundsChanged(MapScope(
+                        Coordinates(target.latitude, target.longitude),
+                        Coordinates(bounds.southwest.latitude, bounds.southwest.longitude),
+                        Coordinates(bounds.northeast.latitude, bounds.northeast.longitude),
+                        bearing, zoom
+                ))
             }
         }
         presenter?.onMapReady()
@@ -60,7 +68,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
     override fun render(viewState: MainViewState) {
         mapAdapter.recycleMarkers()
         mapAdapter.setMarkers(viewState.vehicles)
-        mapAdapter.animateCamera(viewState.userLocation, 13.5f, 0f)
+        val target = LatLng(viewState.mapScope.center.lat, viewState.mapScope.center.lon)
+        mapAdapter.animateCamera(target, viewState.mapScope.zoom, viewState.mapScope.bearing)
     }
 
 

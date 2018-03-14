@@ -13,16 +13,19 @@ class MapInteractorImpl @Inject constructor(
         private val userLocationRepository: UserLocationRepository
 ) : MapInteractor {
 
-    private var bounds = MapScope(
+    private var scope = MapScope(
             Coordinates(0.0, 0.0),
-            Coordinates(0.0, 0.0)
+            Coordinates(0.0, 0.0),
+            Coordinates(0.0, 0.0),
+            0f,
+            1f
     )
     private var vehicleTypes: List<String>
             = listOf(Vehicle.TYPE_BUS, Vehicle.TYPE_TRAM, Vehicle.TYPE_TROLLEY)
 
 
-    override fun setBounds(sw: Coordinates, ne: Coordinates) {
-        bounds = MapScope(sw, ne)
+    override fun setMapScope(scope: MapScope) {
+        this.scope = scope
     }
 
     override fun setVehicleTypes(types: List<String>) {
@@ -30,7 +33,7 @@ class MapInteractorImpl @Inject constructor(
     }
 
 
-    override fun getVehicles() = transportRepository.getAllVehicles(bounds, vehicleTypes)
+    override fun getVehicles() = transportRepository.getAllVehicles(scope, vehicleTypes)
 
     override fun getUserLocation() = userLocationRepository.getUserLocation()
 
