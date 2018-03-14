@@ -1,10 +1,10 @@
 package me.smbduknow.transport.domain.repository
 
+import io.reactivex.Single
 import me.smbduknow.transport.domain.model.Coordinates
-import rx.Observable
 
 interface UserLocationRepository {
 
-    fun getUserLocation(): Observable<Coordinates>
+    fun getUserLocation(): Single<Coordinates>
 
 }

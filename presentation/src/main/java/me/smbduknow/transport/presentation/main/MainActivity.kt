@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnMapReadyCallback, MainMvpView {
 
-    private lateinit var mapAdapter: MapAdapter
+    private var mapAdapter: MapAdapter? = null
 
     private lateinit var nearbyAction: PermissedAction
 
@@ -36,8 +36,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        map_zoom_in.setOnClickListener { mapAdapter.zoomIn() }
-        map_zoom_out.setOnClickListener { mapAdapter.zoomOut() }
+        map_zoom_in.setOnClickListener { mapAdapter?.zoomIn() }
+        map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
         map_geolocation.setOnClickListener { nearbyAction.invoke(this) }
 
         nearbyAction = PermissedAction(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -58,9 +58,9 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
     }
 
     override fun render(viewState: MainViewState) {
-        mapAdapter.recycleMarkers()
-        mapAdapter.setMarkers(viewState.vehicles)
-        mapAdapter.animateCamera(viewState.userLocation, 13.5f, 0f)
+        mapAdapter?.recycleMarkers()
+        mapAdapter?.setMarkers(viewState.vehicles)
+        mapAdapter?.animateCamera(viewState.userLocation, 13.5f, 0f)
     }
 
 

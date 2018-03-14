@@ -1,13 +1,13 @@
 package me.smbduknow.transport.data
 
 import com.google.transit.realtime.GtfsRealtime
+import io.reactivex.Single
 import me.smbduknow.transport.data.assets.RoutesProvider
 import me.smbduknow.transport.data.network.VehiclesApi
 import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Route
 import me.smbduknow.transport.domain.model.Vehicle
 import me.smbduknow.transport.domain.repository.TransportRepository
-import rx.Observable
 import java.util.*
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ class TransportRepositoryImpl @Inject constructor(
 
     private val routes = routesProvider.getRoutes()
 
-    override fun getAllVehicles(mapScope: MapScope, types: List<String>): Observable<List<Vehicle>> {
+    override fun getAllVehicles(mapScope: MapScope, types: List<String>): Single<List<Vehicle>> {
 
         val box = with(mapScope) {
             String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f", sw.lon, sw.lat, ne.lon, ne.lat)

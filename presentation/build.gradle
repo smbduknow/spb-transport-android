@@ -45,13 +45,13 @@ dependencies {
     compile project(":data")
     compile project(":domain")
 
-    final rxAndroidVersion = '1.2.1'
+    final rxAndroidVersion = '2.0.2'
 
     final supportLibraryVersion = '27.0.2'
     final googlePlayVersion = '11.8.0'
 
     // rx
-    compile "io.reactivex:rxandroid:$rxAndroidVersion"
+    compile "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
 
     // MVP
     compile 'com.github.smbduknow:mvp-blueprint:0.9.3'

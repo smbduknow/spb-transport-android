@@ -5,26 +5,26 @@ import android.content.Context
 import android.location.Location
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.Single
 import me.smbduknow.transport.data.playservices.PlayServiceObservable
-import rx.Observable
-import rx.Observer
 
 
 class LocationProvider(context: Context)
     : PlayServiceObservable<Location>(context, LocationServices.API) {
 
     companion object {
-        fun createLastLocationObservable(context: Context): Observable<Location> {
-            return Observable.unsafeCreate(LocationProvider(context))
-        }
+        fun createLastLocationObservable(context: Context): Single<Location> =
+                Observable.create(LocationProvider(context)).singleOrError()
     }
 
     @SuppressLint("MissingPermission")
-    override fun onApiClientReady(apiClient: GoogleApiClient, observer: Observer<in Location>) {
+    override fun onApiClientReady(apiClient: GoogleApiClient, observer: ObservableEmitter<in Location>) {
         val location = LocationServices.FusedLocationApi.getLastLocation(apiClient)
         if (location != null) {
             observer.onNext(location)
         }
-        observer.onCompleted()
+        observer.onComplete()
     }
 }
