@@ -20,7 +20,6 @@ class InteractorModule {
             = MapInteractorImpl(transportRepository, locationRepository)
 
     @Provides
-    @Singleton
     fun provideMapPresenter(interactor: MapInteractor): MainMvpPresenter
             = MainPresenter(interactor)
 
