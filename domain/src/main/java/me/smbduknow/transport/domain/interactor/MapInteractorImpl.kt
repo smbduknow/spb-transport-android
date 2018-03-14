@@ -1,6 +1,6 @@
 package me.smbduknow.transport.domain.interactor
 
-import me.smbduknow.transport.domain.IMapInteractor
+import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
 import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.domain.model.Vehicle
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class MapInteractorImpl @Inject constructor(
         private val transportRepository: TransportRepository,
         private val userLocationRepository: UserLocationRepository
-) : IMapInteractor {
+) : MapInteractor {
 
     private var bounds = MapScope(
             Coordinates(0.0, 0.0),
@@ -25,13 +25,13 @@ class MapInteractorImpl @Inject constructor(
         bounds = MapScope(sw, ne)
     }
 
-    fun setVehicleTypes(types: List<String>) {
+    override fun setVehicleTypes(types: List<String>) {
         vehicleTypes = types
     }
 
 
     override fun getVehicles() = transportRepository.getAllVehicles(bounds, vehicleTypes)
 
-    fun getUserLocation() = userLocationRepository.getUserLocation()
+    override fun getUserLocation() = userLocationRepository.getUserLocation()
 
 }

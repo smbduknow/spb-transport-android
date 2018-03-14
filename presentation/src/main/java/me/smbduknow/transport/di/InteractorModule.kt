@@ -2,7 +2,7 @@ package me.smbduknow.transport.di
 
 import dagger.Module
 import dagger.Provides
-import me.smbduknow.transport.domain.IMapInteractor
+import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.interactor.MapInteractorImpl
 import me.smbduknow.transport.domain.repository.TransportRepository
 import me.smbduknow.transport.domain.repository.UserLocationRepository
@@ -16,12 +16,12 @@ class InteractorModule {
     @Provides
     @Singleton
     fun provideMapInteractor(transportRepository: TransportRepository,
-                             locationRepository: UserLocationRepository): IMapInteractor
+                             locationRepository: UserLocationRepository): MapInteractor
             = MapInteractorImpl(transportRepository, locationRepository)
 
     @Provides
     @Singleton
-    fun provideMapPresenter(interactor: IMapInteractor): MainMvpPresenter
+    fun provideMapPresenter(interactor: MapInteractor): MainMvpPresenter
             = MainPresenter(interactor)
 
 }

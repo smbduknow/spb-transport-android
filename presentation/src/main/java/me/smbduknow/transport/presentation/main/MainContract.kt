@@ -1,5 +1,6 @@
 package me.smbduknow.transport.presentation.main
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
 import me.smbduknow.transport.domain.model.Vehicle
@@ -30,6 +31,7 @@ interface MainMvpView : RendererMvpView<MainViewState> {
  * ViewState model for Main screen
  * */
 data class MainViewState(
+        val userLocation: LatLng,
         val vehicles: List<Vehicle> = emptyList(),
         val error: Throwable? = null
 ) : RendererMvpView.ViewState
