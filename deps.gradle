@@ -1,0 +1,13 @@
+dependencies {
+    final rxJavaVersion = '1.2.7'
+    final daggerVersion = '2.8'
+
+    //kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    //rx
+    compile "io.reactivex:rxjava:$rxJavaVersion"
+
+    // Dagger
+    compile "com.google.dagger:dagger:$daggerVersion"
+}

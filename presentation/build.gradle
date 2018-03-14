@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+apply from: '../deps.gradle'
+
 android {
     
     compileSdkVersion 27
@@ -40,24 +42,21 @@ android {
 
 dependencies {
 
-    final rxJavaVersion = '1.2.7'
+    compile project(":data")
+    compile project(":domain")
+
     final rxAndroidVersion = '1.2.1'
 
     final supportLibraryVersion = '27.0.2'
     final googlePlayVersion = '11.8.0'
 
-    // kotlin
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
     // rx
-    compile "io.reactivex:rxjava:$rxJavaVersion"
     compile "io.reactivex:rxandroid:$rxAndroidVersion"
 
     // MVP
     compile 'com.github.smbduknow:mvp-blueprint:0.9.3'
 
     // Dagger
-    compile 'com.google.dagger:dagger:2.8'
     kapt 'com.google.dagger:dagger-compiler:2.8'
 
     //logging
@@ -69,9 +68,6 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
 
     compile "com.google.android.gms:play-services-maps:$googlePlayVersion"
-    compile "com.google.android.gms:play-services-location:$googlePlayVersion"
     compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
 
-    compile project(":data")
-    compile project(":domain")
 }
