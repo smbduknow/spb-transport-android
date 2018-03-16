@@ -16,12 +16,14 @@ class MainPresenter @Inject constructor (
         private val mapInteractor: MapInteractor
 ) : BaseViewStatePresenter<MainMvpView, MainViewState>(), MainMvpPresenter {
 
-    private val mapReadySubject : PublishSubject<Boolean> = PublishSubject.create()
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
     private val locationSubject : PublishSubject<Boolean> = PublishSubject.create()
 
 
     override fun onCreateObservable(): Observable<MainViewState> {
+
+        val initObservable = Observable.just(LatLng(59.9342802, 30.3350986))
+                .map { MainViewState(it) }
 
         val locationObservable = locationSubject.hide()
                 .switchMapSingle { requestLocation() }
@@ -35,19 +37,16 @@ class MainPresenter @Inject constructor (
                 ) }
                 .switchMapSingle { requestData() }
 
-        val mapReadyObservable = mapReadySubject.hide()
-                .take(1)
-                .map { MainViewState(LatLng(59.9342802, 30.3350986)) }
-
-        return mapReadyObservable.concatWith(Observable.merge(
-                vehiclesObservable,
-                locationObservable
+        return initObservable.concatWith(Observable.merge(
+                locationObservable,
+                vehiclesObservable
         ))
     }
 
-    override fun onMapReady() = mapReadySubject.onNext(true)
     override fun onMapBoundsChanged(bounds: LatLngBounds) = mapBoundsSubject.onNext(bounds)
     override fun onRequestUserLocation() = locationSubject.onNext(true)
+
+
 
     private fun requestData() = mapInteractor.getVehicles()
             .map { vehicles -> MainViewState(getState().userLocation, vehicles) }

@@ -12,8 +12,6 @@ import me.smbduknow.transport.presentation.base.mvp.RendererMvpView
  * */
 interface MainMvpPresenter : MvpPresenter<MainMvpView> {
 
-    fun onMapReady()
-
     fun onMapBoundsChanged(bounds: LatLngBounds)
 
     fun onRequestUserLocation()

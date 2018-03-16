@@ -54,7 +54,6 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
                 presenter?.onMapBoundsChanged(bounds)
             }
         }
-        presenter?.onMapReady()
     }
 
     override fun render(viewState: MainViewState) {
