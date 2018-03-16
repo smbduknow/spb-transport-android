@@ -1,6 +1,8 @@
 package me.smbduknow.transport.data.assets
 
 import android.content.Context
+import io.reactivex.Maybe
+import io.reactivex.Single
 import me.smbduknow.transport.domain.model.Route
 import java.util.*
 import javax.inject.Inject
@@ -30,6 +32,13 @@ class RoutesProvider @Inject constructor(
         cachedRoutes.sort()
     }
 
-    fun getRoutes(): List<Route> = cachedRoutes.toList()
+    fun getRoutes(): Single<List<Route>> = Single.fromCallable {
+        cachedRoutes.toList()
+    }
+
+    fun getRoute(id: String): Maybe<Route> = Maybe.fromCallable {
+        val pos = Collections.binarySearch(cachedRoutes, Route(id = id))
+        cachedRoutes.getOrNull(pos)
+    }
 
 }

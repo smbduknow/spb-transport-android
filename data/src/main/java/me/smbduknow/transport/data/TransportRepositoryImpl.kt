@@ -1,7 +1,9 @@
 package me.smbduknow.transport.data
 
 import com.google.transit.realtime.GtfsRealtime
+import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.rxkotlin.zipWith
 import me.smbduknow.transport.data.assets.RoutesProvider
 import me.smbduknow.transport.data.network.VehiclesApi
 import me.smbduknow.transport.domain.model.MapScope
@@ -13,10 +15,8 @@ import javax.inject.Inject
 
 class TransportRepositoryImpl @Inject constructor(
         private val remote: VehiclesApi,
-        routesProvider: RoutesProvider
+        private val routesProvider: RoutesProvider
 ) : TransportRepository {
-
-    private val routes = routesProvider.getRoutes()
 
     override fun getAllVehicles(mapScope: MapScope, types: List<String>): Single<List<Vehicle>> {
 
@@ -26,26 +26,27 @@ class TransportRepositoryImpl @Inject constructor(
         val transports = types.joinToString(",")
 
         return remote.getVehicles(box, transports)
-                .map { it.entityList.map { mapVehicle(it) } }
+                .map { it.entityList }
+                .flattenAsObservable { it }
+                .flatMapMaybe { Maybe.just(it).zipWith(
+                        routesProvider.getRoute(it.vehicle.trip.routeId)
+                ) }
+                .map { mapVehicle(it.first, it.second) }
+                .toList()
+
     }
 
 
     // TODO move to separate mapper class
-    private fun mapVehicle(entity: GtfsRealtime.FeedEntity): Vehicle {
-        val route = findRoute(entity.vehicle.trip.routeId)
+    private fun mapVehicle(entity: GtfsRealtime.FeedEntity, route: Route): Vehicle {
         return Vehicle(
                 id = entity.id,
-                label = route?.label ?: "",
-                type = route?.typeLabel ?: "",
+                label = route.label,
+                type = route.typeLabel,
                 latitude = entity.vehicle.position.latitude.toDouble(),
                 longitude = entity.vehicle.position.longitude.toDouble(),
                 bearing = entity.vehicle.position.bearing
         )
-    }
-
-    private fun findRoute(routeId: String): Route? {
-        val pos = Collections.binarySearch(routes, Route(id = routeId))
-        return if (pos >= 0) routes[pos] else null
     }
 
 }
