@@ -51,12 +51,12 @@ class MainPresenter @Inject constructor (
 
     private fun requestData() = mapInteractor.getVehicles()
             .map { vehicles -> MainViewState(getState().userLocation, vehicles) }
-            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
+            .onErrorReturn { getState().copy(error = it) }
             .subscribeOn(Schedulers.io())
 
     private fun requestLocation() = mapInteractor.getUserLocation()
             .map { LatLng(it.lat, it.lon) }
             .map { location -> MainViewState(location, getState().vehicles) }
-            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
+            .onErrorReturn { getState().copy(error = it) }
             .subscribeOn(Schedulers.io())
 }
