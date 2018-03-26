@@ -13,12 +13,12 @@ import javax.inject.Singleton
 class InteractorModule {
 
     @Provides
-    @Singleton
     fun provideMapInteractor(transportRepository: TransportRepository,
                              locationRepository: UserLocationRepository): MapInteractor
             = MapInteractorImpl(transportRepository, locationRepository)
 
     @Provides
+    @Singleton
     fun provideMapViewModelFactory(interactor: MapInteractor): MapViewModelFactory
             = MapViewModelFactory(interactor)
 

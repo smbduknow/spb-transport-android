@@ -25,7 +25,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @Inject
     lateinit var viewModelFactory: MapViewModelFactory
 
-    private lateinit var viewModel: MapViewModel
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(MapViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +47,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         App.graph.injectTo(this)
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MapViewModel::class.java)
         viewModel.stateLiveData.observe(this, stateObserver)
     }
 
