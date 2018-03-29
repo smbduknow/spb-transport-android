@@ -47,7 +47,7 @@ object DrawableUtil {
         return bitmap
     }
 
-    private fun getBitmapFromVectorDrawable(context: Context, @DrawableRes drawableId: Int): Bitmap {
+    fun getBitmapFromVectorDrawable(context: Context, @DrawableRes drawableId: Int): Bitmap {
         val cached = if(drawableCache.containsKey(drawableId)) drawableCache[drawableId] else null
         if(cached != null) return cached
 

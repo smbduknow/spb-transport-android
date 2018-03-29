@@ -50,22 +50,16 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapAdapter = MapAdapter(this, googleMap).apply {
-            setOnCameraMoveListener { target, bounds, zoom, bearing ->
-                presenter?.onMapBoundsChanged(MapScope(
-                        Coordinates(target.latitude, target.longitude),
-                        Coordinates(bounds.southwest.latitude, bounds.southwest.longitude),
-                        Coordinates(bounds.northeast.latitude, bounds.northeast.longitude),
-                        bearing, zoom
-                ))
-            }
+            setOnCameraMoveListener ( presenter::onMapCameraChanged )
         }
+        presenter?.onMapReady()
     }
 
     override fun render(viewState: MainViewState) {
-        mapAdapter.recycleMarkers()
-        mapAdapter.setMarkers(viewState.vehicles)
-        val target = LatLng(viewState.mapScope.center.lat, viewState.mapScope.center.lon)
-        mapAdapter.animateCamera(target, viewState.mapScope.zoom, viewState.mapScope.bearing)
+        mapAdapter?.moveCamera(viewState.mapState.target, viewState.mapState.zoom, viewState.mapState.bearing)
+        mapAdapter?.recycleMarkers()
+        mapAdapter?.setMarkers(viewState.vehicles)
+        viewState.userLocation?.let { mapAdapter?.setUserMarker(it) }
     }
 
 

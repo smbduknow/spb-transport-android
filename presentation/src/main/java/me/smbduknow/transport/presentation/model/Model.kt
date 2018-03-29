@@ -1,5 +1,9 @@
 package me.smbduknow.transport.presentation.model
 
-/**
- * Created by smbduknow on 28.03.18.
- */
+import com.google.android.gms.maps.model.LatLng
+
+data class MapState(
+        val target: LatLng,
+        val bearing: Float,
+        val zoom: Float
+)

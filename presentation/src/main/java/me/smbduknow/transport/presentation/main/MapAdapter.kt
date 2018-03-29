@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import me.smbduknow.transport.R
 import me.smbduknow.transport.domain.model.Vehicle
+import me.smbduknow.transport.presentation.misc.DrawableUtil
 import me.smbduknow.transport.presentation.misc.addMarker
 import me.smbduknow.transport.presentation.misc.updateMarker
 
@@ -20,6 +21,8 @@ class MapAdapter(
 
     private var curMarker: Marker? = null
     private val markerCache: MutableMap<String, Marker> = mutableMapOf()
+
+    private var userMarker: Marker? = null
 
     private var cameraMoveListener:
             ((target: LatLng, bounds: LatLngBounds, zoom: Float, bearing: Float) -> Unit)? = null
@@ -70,7 +73,6 @@ class MapAdapter(
                         vehicle.latitude,
                         vehicle.longitude,
                         vehicle.bearing)
-
                 markerCache.put(vehicle.id, marker)
             } else {
                 markerCache[vehicle.id]?.updateMarker(context,
@@ -93,6 +95,20 @@ class MapAdapter(
                 marker.remove()
                 iterator.remove()
             }
+        }
+    }
+
+    fun setUserMarker(position: LatLng) {
+        if(userMarker != null) {
+            userMarker?.position = position
+        } else {
+            val bitmap = DrawableUtil.getBitmapFromVectorDrawable(context, R.drawable.ic_my_location)
+            userMarker = googleMap.addMarker(MarkerOptions()
+                    .position(position)
+                    .anchor(0.5f, 0.5f)
+                    .flat(true)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            )
         }
     }
 
