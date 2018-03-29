@@ -44,8 +44,13 @@ data class Coordinates(
  * Bounds of rectangle area where vehicles will be requested
  * @property sw southwest coordinates of scope rect
  * @property ne northeast coordinates of scope rect
+ * @property bearing map rect bearing
+ * @property zoom map zoom value
  * */
 data class MapScope(
+        val center: Coordinates,
         val sw: Coordinates,
-        val ne: Coordinates
+        val ne: Coordinates,
+        val bearing: Float,
+        val zoom: Float
 )

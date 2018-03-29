@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.MapScope
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -35,27 +36,30 @@ class MainPresenter @Inject constructor (
                         Coordinates(bounds.southwest.latitude, bounds.southwest.longitude),
                         Coordinates(bounds.northeast.latitude, bounds.northeast.longitude)
                 ) }
-                .switchMapSingle { requestData() }
+                .switchMap { requestData() }
 
-        return initObservable.concatWith(Observable.merge(
-                locationObservable,
-                vehiclesObservable
+        val mapReadyObservable = mapReadySubject.asObservable()
+                .first()
+                .map { MainViewState(LatLng(59.9342802, 30.3350986)) }
+
+        return Observable.concat(mapReadyObservable, Observable.merge(
+                vehiclesObservable,
+                locationObservable
         ))
     }
 
+    override fun onMapReady() = mapReadySubject.onNext(null)
     override fun onMapBoundsChanged(bounds: LatLngBounds) = mapBoundsSubject.onNext(bounds)
-    override fun onRequestUserLocation() = locationSubject.onNext(true)
-
-
+    override fun onRequestUserLocation() = locationSubject.onNext(null)
 
     private fun requestData() = mapInteractor.getVehicles()
             .map { vehicles -> MainViewState(getState().userLocation, vehicles) }
-            .onErrorReturn { getState().copy(error = it) }
+            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
             .subscribeOn(Schedulers.io())
 
     private fun requestLocation() = mapInteractor.getUserLocation()
             .map { LatLng(it.lat, it.lon) }
             .map { location -> MainViewState(location, getState().vehicles) }
-            .onErrorReturn { getState().copy(error = it) }
+            .onErrorReturn { error -> MainViewState(getState().userLocation, getState().vehicles, error) }
             .subscribeOn(Schedulers.io())
 }

@@ -29,7 +29,8 @@ interface MainMvpView : RendererMvpView<MainViewState> {
  * ViewState model for Main screen
  * */
 data class MainViewState(
-        val userLocation: LatLng,
+        val mapScope: MapScope,
+        val userLocation: LatLng? = null,
         val vehicles: List<Vehicle> = emptyList(),
         val error: Throwable? = null
 ) : RendererMvpView.ViewState
