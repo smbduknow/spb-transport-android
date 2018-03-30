@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import dagger.Lazy
 import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.mvpblueprint.BasePresenterActivity
@@ -55,6 +56,11 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         presenter?.onMapReady()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        nearbyAction.handlePermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     override fun render(viewState: MainViewState) {
         mapAdapter?.moveCamera(viewState.mapState.target, viewState.mapState.zoom, viewState.mapState.bearing)
         mapAdapter?.recycleMarkers()
@@ -62,10 +68,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         viewState.userLocation?.let { mapAdapter?.setUserMarker(it) }
     }
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        nearbyAction.handlePermissionsResult(requestCode, permissions, grantResults)
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    override fun moveToPosition(target:LatLng) {
+        mapAdapter?.animateCamera(target)
     }
 
 }

@@ -29,6 +29,8 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
  * */
 interface MainMvpView : RendererMvpView<MainViewState> {
 
+    fun moveToPosition(target: LatLng)
+
 }
 
 /**

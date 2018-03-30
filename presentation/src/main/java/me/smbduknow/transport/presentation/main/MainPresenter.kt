@@ -67,6 +67,7 @@ class MainPresenter @Inject constructor (
 
     private fun requestLocation() = mapInteractor.getUserLocation()
             .map { LatLng(it.lat, it.lon) }
+            .doOnSuccess { view?.moveToPosition(it) }
             .map { location -> getState().copy(mapState = mapStateSubject.value, userLocation = location) }
             .onErrorReturn { error -> getState().copy(error = error) }
             .subscribeOn(Schedulers.io())

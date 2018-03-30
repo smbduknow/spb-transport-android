@@ -3,6 +3,7 @@
 
     <dimen name="text_pin">9sp</dimen>
 
-    <dimen name="pin_size">30dp</dimen>
+    <dimen name="pin_vehicle_size">30dp</dimen>
+    <dimen name="pin_user_size">12dp</dimen>
 
 </resources>
