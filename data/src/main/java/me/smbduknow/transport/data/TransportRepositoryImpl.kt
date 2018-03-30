@@ -27,16 +27,12 @@ class TransportRepositoryImpl @Inject constructor(
         }
         val transports = types.joinToString(",")
 
-        return remote.getVehicles(box, transports)
+        return remote.getVehicles(box, transports, routeId)
                 .map { it.entityList }
                 .flattenAsObservable { it }
                 .flatMapMaybe { Maybe.just(it).zipWith(
                         routesProvider.getRoute(it.vehicle.trip.routeId)
                 ) }
-                .filter {
-                    if(routeId != null) it.second.id == routeId
-                    else true
-                }
                 .map { mapVehicle(it.first, it.second) }
                 .toList()
 

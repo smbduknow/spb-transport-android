@@ -11,9 +11,10 @@ class VehiclesApi @Inject constructor() {
 
     private val VEHICLE_URL = "http://transport.orgp.spb.ru/Portal/transport/internalapi/gtfs/realtime/vehicle"
 
-    fun getVehicles(box: String, transports: String): Single<GtfsRealtime.FeedMessage> {
+    fun getVehicles(box: String, transports: String, routeId: String? = null): Single<GtfsRealtime.FeedMessage> {
 
-        val url = URL("$VEHICLE_URL?bbox=$box&transports=$transports")
+        val routeParam = if(!routeId.isNullOrBlank()) "&routeIDs=$routeId" else ""
+        val url = URL("$VEHICLE_URL?bbox=$box&transports=$transports$routeParam")
         Log.d("VehiclesApi", url.toString())
 
         return Single.fromCallable {
