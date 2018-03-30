@@ -75,7 +75,13 @@ class MapAdapter(
         }
     }
 
-    fun recycleMarkers() {
+    fun recycleMarkers(fullRefresh: Boolean = false) {
+        if(fullRefresh) {
+            googleMap.clear()
+            markerCache.clear()
+            userMarker = null
+            return
+        }
         val bounds = googleMap.projection.visibleRegion.latLngBounds
         val iterator = markerCache.entries.iterator()
         while (iterator.hasNext()) {

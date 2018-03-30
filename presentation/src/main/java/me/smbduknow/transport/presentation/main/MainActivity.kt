@@ -52,6 +52,7 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
     override fun onMapReady(googleMap: GoogleMap) {
         mapAdapter = MapAdapter(this, googleMap).apply {
             setOnCameraMoveListener ( presenter::onMapCameraChanged )
+            setOnVehicleClickListener ( presenter::onVehicleSelected )
         }
         presenter?.onMapReady()
     }
@@ -63,7 +64,7 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
 
     override fun render(viewState: MainViewState) {
         mapAdapter?.moveCamera(viewState.mapState.target, viewState.mapState.zoom, viewState.mapState.bearing)
-        mapAdapter?.recycleMarkers()
+        mapAdapter?.recycleMarkers(fullRefresh = true)
         mapAdapter?.setMarkers(viewState.vehicles)
         viewState.userLocation?.let { mapAdapter?.setUserMarker(it) }
     }

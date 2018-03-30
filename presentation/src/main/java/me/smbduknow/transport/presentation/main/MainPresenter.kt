@@ -58,6 +58,10 @@ class MainPresenter @Inject constructor (
         mapBoundsSubject.onNext(bounds)
         mapStateSubject.onNext(MapState(target, bearing, zoom))
     }
+
+    override fun onVehicleSelected(id: String) {
+        mapInteractor.setSelectedRoute(getState().vehicles.first { it.id == id }.routeId)
+    }
     override fun onRequestUserLocation() = locationSubject.onNext(true)
 
     private fun requestVehicles() = mapInteractor.getVehicles()

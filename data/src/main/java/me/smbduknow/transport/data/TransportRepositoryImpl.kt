@@ -18,7 +18,9 @@ class TransportRepositoryImpl @Inject constructor(
         private val routesProvider: RoutesProvider
 ) : TransportRepository {
 
-    override fun getAllVehicles(mapScope: MapScope, types: List<String>): Single<List<Vehicle>> {
+    override fun getAllVehicles(mapScope: MapScope,
+                                types: List<String>,
+                                routeId: String?): Single<List<Vehicle>> {
 
         val box = with(mapScope) {
             String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f", sw.lon, sw.lat, ne.lon, ne.lat)
@@ -31,6 +33,10 @@ class TransportRepositoryImpl @Inject constructor(
                 .flatMapMaybe { Maybe.just(it).zipWith(
                         routesProvider.getRoute(it.vehicle.trip.routeId)
                 ) }
+                .filter {
+                    if(routeId != null) it.second.id == routeId
+                    else true
+                }
                 .map { mapVehicle(it.first, it.second) }
                 .toList()
 
@@ -45,7 +51,8 @@ class TransportRepositoryImpl @Inject constructor(
                 type = route.typeLabel,
                 latitude = entity.vehicle.position.latitude.toDouble(),
                 longitude = entity.vehicle.position.longitude.toDouble(),
-                bearing = entity.vehicle.position.bearing
+                bearing = entity.vehicle.position.bearing,
+                routeId = route.id
         )
     }
 

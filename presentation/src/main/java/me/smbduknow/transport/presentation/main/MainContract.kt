@@ -20,6 +20,8 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
                            zoom: Float,
                            bearing: Float)
 
+    fun onVehicleSelected(id: String)
+
     fun onRequestUserLocation()
 
 }

@@ -8,6 +8,7 @@ interface MapInteractor {
 
     fun setBounds(sw: Coordinates, ne: Coordinates)
     fun setVehicleTypes(types: List<String>)
+    fun setSelectedRoute(id: String)
 
     fun getVehicles(): Single<List<Vehicle>>
     fun getUserLocation(): Single<Coordinates>

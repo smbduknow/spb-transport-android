@@ -8,7 +8,8 @@ interface TransportRepository {
 
     fun getAllVehicles(
             mapScope: MapScope,
-            types: List<String>
+            types: List<String>,
+            routeId: String? = null
     ): Single<List<Vehicle>>
 
 }
