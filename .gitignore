@@ -10,3 +10,5 @@ libs/
 gen/
 
 .externalNativeBuild
+src/androidTest/
+src/test/

@@ -1,0 +1,73 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+apply from: '../deps.gradle'
+
+android {
+    
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "me.smbduknow.transport"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        vectorDrawables.useSupportLibrary = true
+
+        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+        }
+    }
+}
+
+dependencies {
+
+    compile project(":data")
+    compile project(":domain")
+
+    final rxAndroidVersion = '2.0.2'
+
+    final supportLibraryVersion = '27.0.2'
+    final googlePlayVersion = '11.8.0'
+
+    // rx
+    compile "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
+
+    // MVP
+    compile 'com.github.smbduknow:mvp-blueprint:0.9.3'
+
+    // Dagger
+    kapt 'com.google.dagger:dagger-compiler:2.8'
+
+    //logging
+    compile 'com.jakewharton.timber:timber:4.3.1'
+
+    // ui-android
+    compile "com.android.support:support-v4:$supportLibraryVersion"
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:design:$supportLibraryVersion"
+
+    compile "com.google.android.gms:play-services-maps:$googlePlayVersion"
+    compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
+
+}
