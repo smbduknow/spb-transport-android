@@ -24,7 +24,7 @@ class MapAdapter(
     private var cameraMoveListener:
             ((target: LatLng, bounds: LatLngBounds, zoom: Float, bearing: Float) -> Unit)? = null
 
-    private var markerClickListener: (() -> Unit)? = null
+    private var markerClickListener: ((id: String) -> Unit)? = null
     private var mapClickListener: (() -> Unit)? = null
 
     init {
@@ -45,7 +45,7 @@ class MapAdapter(
         this.cameraMoveListener = listener
     }
 
-    fun setOnVehicleClickListener(listener: () -> Unit) {
+    fun setOnVehicleClickListener(listener: (id: String) -> Unit) {
         this.markerClickListener = listener
     }
 
@@ -57,6 +57,7 @@ class MapAdapter(
         items.forEach { vehicle ->
             if (!markerCache.containsKey(vehicle.id)) {
                 val marker = googleMap.addMarker(context,
+                        vehicle.id,
                         vehicle.type,
                         vehicle.label,
                         vehicle.latitude,
@@ -138,7 +139,7 @@ class MapAdapter(
     }
 
     private fun onMarkerClick(marker: Marker): Boolean {
-        markerClickListener?.invoke()
+        markerClickListener?.invoke(marker.tag as? String ?: "")
         return true
     }
 
