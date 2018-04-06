@@ -2,7 +2,9 @@ package me.smbduknow.transport.presentation.main
 
 import android.Manifest
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -40,6 +42,11 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         map_zoom_in.setOnClickListener { mapAdapter?.zoomIn() }
         map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
         map_geolocation.setOnClickListener { nearbyAction.invoke(this) }
+
+        map_overlay.visibility = View.GONE
+        map_search_edit.setOnClickListener {
+            map_overlay.visibility = if(map_overlay.isVisible) View.GONE else View.VISIBLE
+        }
 
         nearbyAction = PermissedAction(Manifest.permission.ACCESS_FINE_LOCATION,
                 { presenter?.onRequestUserLocation() },
