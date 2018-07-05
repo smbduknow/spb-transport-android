@@ -38,6 +38,9 @@ class TransportRepositoryImpl @Inject constructor(
 
     }
 
+    override fun searchRoutes(label: String): Single<List<Route>> =
+            routesProvider.searchRoutesByLabel(label)
+
 
     // TODO move to separate mapper class
     private fun mapVehicle(entity: GtfsRealtime.FeedEntity, route: Route): Vehicle {

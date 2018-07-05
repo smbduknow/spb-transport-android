@@ -83,7 +83,29 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:textSize="16sp"
+            android:lines="1"
+            android:imeOptions="actionSearch"
+            android:inputType="numberDecimal"
             android:hint="Search your bus, tram or trolley..."/>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/map_search_bar_suggests_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/map_search_bar_suggests_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/transparent"/>-->
+        <TextView
+            android:id="@+id/map_search_bar_suggests_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp" />
     </android.support.v7.widget.CardView>
 
 </android.support.design.widget.CoordinatorLayout>

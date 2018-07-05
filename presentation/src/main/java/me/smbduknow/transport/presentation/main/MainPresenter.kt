@@ -3,6 +3,7 @@ package me.smbduknow.transport.presentation.main
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -23,6 +24,7 @@ class MainPresenter @Inject constructor (
     private val locationSubject : PublishSubject<Boolean> = PublishSubject.create()
 
     private val mapStateSubject : BehaviorSubject<MapState> = BehaviorSubject.create()
+    private val querySubject : PublishSubject<String> = PublishSubject.create()
 
     override fun onCreateObservable(): Observable<MainViewState> {
 
@@ -46,10 +48,21 @@ class MainPresenter @Inject constructor (
                 ) }
                 .switchMapSingle { requestVehicles() }
 
+        val searchObservable = querySubject.hide()
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .distinctUntilChanged()
+
+                .switchMapSingle {
+                    if(it.isNotBlank()) mapInteractor.searchRoutes(it)
+                        .map { getState().copy(queryResults = it) }
+                    else Single.just(getState().copy(queryResults = emptyList()))
+                }
+
         return initObservable.concatWith(Observable.merge(
                 mapReadyObservable,
                 vehiclesObservable,
-                locationObservable
+                locationObservable,
+                searchObservable
         ))
     }
 
@@ -59,8 +72,14 @@ class MainPresenter @Inject constructor (
         mapStateSubject.onNext(MapState(target, bearing, zoom))
     }
 
-    override fun onVehicleSelected(id: String) {
-        mapInteractor.setSelectedRoute(getState().vehicles.first { it.id == id }.routeId)
+    override fun onSearchQuery(q: String) {
+        querySubject.onNext(q)
+    }
+
+    override fun onSuggestSelected(index: Int) {
+        mapInteractor.setSelectedRoute(getState().queryResults[index].id)
+        querySubject.onNext("")
+        mapReadySubject.onNext(true)
     }
     override fun onRequestUserLocation() = locationSubject.onNext(true)
 

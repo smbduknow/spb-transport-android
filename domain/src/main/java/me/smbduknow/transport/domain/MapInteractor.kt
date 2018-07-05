@@ -2,6 +2,7 @@ package me.smbduknow.transport.domain
 
 import io.reactivex.Single
 import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.Route
 import me.smbduknow.transport.domain.model.Vehicle
 
 interface MapInteractor {
@@ -12,4 +13,6 @@ interface MapInteractor {
 
     fun getVehicles(): Single<List<Vehicle>>
     fun getUserLocation(): Single<Coordinates>
+
+    fun searchRoutes(query: String): Single<List<Route>>
 }

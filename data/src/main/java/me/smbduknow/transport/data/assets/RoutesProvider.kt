@@ -41,4 +41,8 @@ class RoutesProvider @Inject constructor(
         cachedRoutes.getOrNull(pos)
     }
 
+    fun searchRoutesByLabel(label: String): Single<List<Route>> = Single.fromCallable {
+        cachedRoutes.filter { it.label.startsWith(label) }
+    }
+
 }

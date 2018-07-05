@@ -3,6 +3,7 @@ package me.smbduknow.transport.presentation.main
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import me.smbduknow.mvpblueprint.mvp.MvpPresenter
+import me.smbduknow.transport.domain.model.Route
 import me.smbduknow.transport.domain.model.Vehicle
 import me.smbduknow.transport.presentation.base.mvp.RendererMvpView
 import me.smbduknow.transport.presentation.model.MapState
@@ -20,7 +21,8 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
                            zoom: Float,
                            bearing: Float)
 
-    fun onVehicleSelected(id: String)
+    fun onSearchQuery(q: String)
+    fun onSuggestSelected(index: Int)
 
     fun onRequestUserLocation()
 
@@ -42,5 +44,7 @@ data class MainViewState(
         val mapState: MapState,
         val userLocation: LatLng? = null,
         val vehicles: List<Vehicle> = emptyList(),
+        val query: String = "",
+        val queryResults: List<Route> = emptyList(),
         val error: Throwable? = null
 ) : RendererMvpView.ViewState

@@ -41,4 +41,7 @@ class MapInteractorImpl @Inject constructor(
     override fun getUserLocation() =
             userLocationRepository.getUserLocation()
 
+
+    override fun searchRoutes(query: String) =
+            transportRepository.searchRoutes(query)
 }
