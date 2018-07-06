@@ -10,12 +10,14 @@
     tools:background="@color/white">
 
     <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/suggest_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:padding="8dp"
         app:srcCompat="@drawable/ic_vehicle_bus"/>
 
     <TextView
+        android:id="@+id/suggest_label"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -23,6 +25,6 @@
         android:paddingRight="8dp"
         android:textColor="@color/vehicle_bus_dark"
         android:textStyle="bold"
-        android:text="bus 191"/>
+        android:text="191"/>
 
 </LinearLayout>

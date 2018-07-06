@@ -2,6 +2,7 @@ package me.smbduknow.transport.presentation.main
 
 import android.Manifest
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
@@ -17,13 +18,14 @@ import me.smbduknow.mvpblueprint.PresenterFactory
 import me.smbduknow.transport.App
 import me.smbduknow.transport.R
 import me.smbduknow.transport.presentation.misc.PermissedAction
-import me.smbduknow.transport.presentation.misc.dismissKeyboard
 import javax.inject.Inject
 
 
 class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnMapReadyCallback, MainMvpView {
 
     private var mapAdapter: MapAdapter? = null
+
+    private val suggestAdapter by lazy { SuggestAdapter() }
 
     private lateinit var nearbyAction: PermissedAction
 
@@ -45,10 +47,11 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
         map_geolocation.setOnClickListener { nearbyAction.invoke(this) }
 
-//        map_overlay.visibility = View.GONE
-////        map_search_edit.setOnClickListener {
-////            map_overlay.visibility = if(map_overlay.isVisible) View.GONE else View.VISIBLE
-////        }
+        map_search_bar_suggests_list.apply {
+            adapter = suggestAdapter
+            layoutManager = LinearLayoutManager(context).apply { isAutoMeasureEnabled = true }
+            setHasFixedSize(true)
+        }
 
         map_search_edit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -58,11 +61,6 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
             }
         })
 
-        map_search_bar_suggests_test.setOnClickListener {
-            presenter.onSuggestSelected(0)
-            map_search_edit.clearComposingText()
-            dismissKeyboard(map_search_edit)
-        }
 
         nearbyAction = PermissedAction(Manifest.permission.ACCESS_FINE_LOCATION,
                 { presenter?.onRequestUserLocation() },
@@ -96,9 +94,8 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
             map_search_bar_suggests_wrapper.isVisible = this
         }
 
-        viewState.queryResults.firstOrNull()?.let {
-            map_search_bar_suggests_test.text = "${it.label} ${it.typeLabel}"
-        }
+        suggestAdapter.setItems(viewState.queryResults
+                .filter { arrayOf("bus", "trolley", "tram").contains(it.typeLabel) })
 
     }
 
