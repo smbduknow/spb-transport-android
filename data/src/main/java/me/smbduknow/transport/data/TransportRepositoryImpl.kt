@@ -20,14 +20,20 @@ class TransportRepositoryImpl @Inject constructor(
 
     override fun getAllVehicles(mapScope: MapScope,
                                 types: List<String>,
-                                routeId: String?): Single<List<Vehicle>> {
+                                routeIds: List<String>,
+                                searchQuery: String): Single<List<Vehicle>> {
 
         val box = with(mapScope) {
             String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f", sw.lon, sw.lat, ne.lon, ne.lat)
         }
         val transports = types.joinToString(",")
 
-        return remote.getVehicles(box, transports, routeId)
+        return Single.just(routeIds)
+                .flatMap {
+                    if(routeIds.isNotEmpty()) Single.just(routeIds)
+                    else routesProvider.searchRoutesByLabel(searchQuery).map { it.map { it.id } }
+                }
+                .flatMap { remote.getVehicles(box, transports, routeIds) }
                 .map { it.entityList }
                 .flattenAsObservable { it }
                 .flatMapMaybe { Maybe.just(it).zipWith(

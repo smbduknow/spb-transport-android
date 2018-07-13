@@ -25,7 +25,7 @@ class RoutesProvider @Inject constructor(
                         type = rowData[4],
                         typeLabel = rowData[5]
                 )
-                cachedRoutes.add(route)
+                if(isValid(route)) cachedRoutes.add(route)
                 line = reader.readLine()
             }
         }
@@ -42,7 +42,15 @@ class RoutesProvider @Inject constructor(
     }
 
     fun searchRoutesByLabel(label: String): Single<List<Route>> = Single.fromCallable {
-        cachedRoutes.filter { it.label.startsWith(label) }
+        cachedRoutes
+                .filter { it.label.startsWith(label) }
     }
+
+    // private
+
+    private fun isValid(route:Route) = route.label.last().isDigit()
+            && arrayOf("bus", "trolley", "tram").contains(route.typeLabel)
+
+
 
 }

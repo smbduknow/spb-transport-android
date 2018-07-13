@@ -10,7 +10,8 @@ interface TransportRepository {
     fun getAllVehicles(
             mapScope: MapScope,
             types: List<String>,
-            routeId: String? = null
+            routeIds: List<String> = emptyList(),
+            searchQuery: String = ""
     ): Single<List<Vehicle>>
 
     fun searchRoutes(

@@ -14,11 +14,12 @@ class SuggestAdapter : RecyclerView.Adapter<SuggestAdapter.ViewHolder>() {
     private val RES_ID = R.layout.item_suggestion
 
     private var items: List<Route> = emptyList()
+    private var itemClickListener: (route: Route) -> Unit = {}
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(RES_ID, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, itemClickListener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -32,8 +33,15 @@ class SuggestAdapter : RecyclerView.Adapter<SuggestAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun setOnItemClickListener(listener: (route: Route) -> Unit) {
+        itemClickListener = listener
+    }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    class ViewHolder(
+            itemView: View,
+            private var clickListener: (route: Route) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
 
         companion object {
             private val COLOR_MAP = mapOf(
@@ -54,6 +62,7 @@ class SuggestAdapter : RecyclerView.Adapter<SuggestAdapter.ViewHolder>() {
             itemView.suggest_label.text = item.label
             itemView.suggest_label.setTextColor(ContextCompat.getColor(itemView.context, colorRes))
             itemView.suggest_icon.setImageResource(iconRes)
+            itemView.setOnClickListener { clickListener(item) }
         }
 
     }

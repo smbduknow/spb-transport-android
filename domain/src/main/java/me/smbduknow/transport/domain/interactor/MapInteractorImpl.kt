@@ -20,7 +20,11 @@ class MapInteractorImpl @Inject constructor(
     private var vehicleTypes: List<String>
             = listOf(Vehicle.TYPE_BUS, Vehicle.TYPE_TRAM, Vehicle.TYPE_TROLLEY)
 
-    private var selectedRouteId: String? = null
+    private var selectedRouteIds: List<String> = emptyList()
+
+    private var searchQuery: String = ""
+
+
 
     override fun setBounds(sw: Coordinates, ne: Coordinates) {
         bounds = MapScope(sw, ne)
@@ -30,18 +34,22 @@ class MapInteractorImpl @Inject constructor(
         vehicleTypes = types
     }
 
-    override fun setSelectedRoute(id: String) {
-        selectedRouteId = id
+    override fun setSelectedRoutes(ids: List<String>) {
+        selectedRouteIds = ids
+    }
+
+    override fun setSearchQuery(query: String) {
+        searchQuery = query
     }
 
 
     override fun getVehicles() =
-            transportRepository.getAllVehicles(bounds, vehicleTypes, selectedRouteId)
+            transportRepository.getAllVehicles(bounds, vehicleTypes, selectedRouteIds, searchQuery)
 
     override fun getUserLocation() =
             userLocationRepository.getUserLocation()
 
 
-    override fun searchRoutes(query: String) =
+    override fun searchRouteSuggestions(query: String) =
             transportRepository.searchRoutes(query)
 }

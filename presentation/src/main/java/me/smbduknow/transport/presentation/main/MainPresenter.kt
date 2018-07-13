@@ -9,6 +9,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import me.smbduknow.transport.domain.MapInteractor
 import me.smbduknow.transport.domain.model.Coordinates
+import me.smbduknow.transport.domain.model.Route
 import me.smbduknow.transport.presentation.base.rx.BaseViewStatePresenter
 import me.smbduknow.transport.presentation.model.MapState
 import java.util.concurrent.TimeUnit
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class MainPresenter @Inject constructor (
         private val mapInteractor: MapInteractor
 ) : BaseViewStatePresenter<MainMvpView, MainViewState>(), MainMvpPresenter {
+
 
     private val mapReadySubject : PublishSubject<Boolean> = PublishSubject.create()
     private val mapBoundsSubject : PublishSubject<LatLngBounds> = PublishSubject.create()
@@ -51,11 +53,11 @@ class MainPresenter @Inject constructor (
         val searchObservable = querySubject.hide()
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
-
-                .switchMapSingle {
-                    if(it.isNotBlank()) mapInteractor.searchRoutes(it)
-                        .map { getState().copy(queryResults = it) }
-                    else Single.just(getState().copy(queryResults = emptyList()))
+                .flatMap { query ->
+                    Single.concatArray(
+                            Single.just(getState().copy(query = query)),
+                            requestSuggestions(query)
+                    ).toObservable()
                 }
 
         return initObservable.concatWith(Observable.merge(
@@ -72,16 +74,18 @@ class MainPresenter @Inject constructor (
         mapStateSubject.onNext(MapState(target, bearing, zoom))
     }
 
-    override fun onSearchQuery(q: String) {
+    override fun onSuggestQuery(q: String) {
         querySubject.onNext(q)
     }
 
-    override fun onSuggestSelected(index: Int) {
-        mapInteractor.setSelectedRoute(getState().queryResults[index].id)
+    override fun onSuggestSelected(route: Route) {
+        mapInteractor.setSelectedRoutes(listOf(route.id))
         querySubject.onNext("")
-        mapReadySubject.onNext(true)
     }
     override fun onRequestUserLocation() = locationSubject.onNext(true)
+
+
+    // private
 
     private fun requestVehicles() = mapInteractor.getVehicles()
             .map { vehicles -> getState().copy(mapState = mapStateSubject.value, vehicles = vehicles) }
@@ -94,4 +98,11 @@ class MainPresenter @Inject constructor (
             .map { location -> getState().copy(mapState = mapStateSubject.value, userLocation = location) }
             .onErrorReturn { error -> getState().copy(error = error) }
             .subscribeOn(Schedulers.io())
+
+    private fun requestSuggestions(q:String) =
+            if(q.isNotBlank()) {
+                mapInteractor.searchRouteSuggestions(q).map { getState().copy(query = q, queryResults = it) }
+            } else {
+                Single.just(getState().copy(query = q, queryResults = emptyList()))
+            }
 }

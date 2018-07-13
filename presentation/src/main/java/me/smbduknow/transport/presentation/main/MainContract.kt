@@ -21,8 +21,8 @@ interface MainMvpPresenter : MvpPresenter<MainMvpView> {
                            zoom: Float,
                            bearing: Float)
 
-    fun onSearchQuery(q: String)
-    fun onSuggestSelected(index: Int)
+    fun onSuggestQuery(q: String)
+    fun onSuggestSelected(route: Route)
 
     fun onRequestUserLocation()
 
