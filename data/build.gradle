@@ -5,12 +5,12 @@ apply from: '../deps.gradle'
 
 android {
 
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
 
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
@@ -33,11 +33,12 @@ android {
 
 dependencies {
 
-    compile project(":domain")
+    implementation project(":domain")
 
     final googlePlayVersion = '12.0.1'
 
-    compile "com.google.android.gms:play-services-location:$googlePlayVersion"
-    compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
+    implementation "com.google.android.gms:play-services-location:$googlePlayVersion"
+    implementation "com.google.transit:gtfs-realtime-bindings:0.0.4"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 }

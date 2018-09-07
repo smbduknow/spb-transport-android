@@ -5,7 +5,7 @@ apply from: '../deps.gradle'
 
 dependencies {
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.10.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.10.0'
 
 }
