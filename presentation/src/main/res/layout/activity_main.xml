@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
@@ -9,7 +9,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-    <android.support.design.internal.ScrimInsetsFrameLayout
+    <com.google.android.material.internal.ScrimInsetsFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="@bool/fit_system_window">
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
-    </android.support.design.internal.ScrimInsetsFrameLayout>
+    </com.google.android.material.internal.ScrimInsetsFrameLayout>
 
 
     <LinearLayout
@@ -31,7 +31,7 @@
         android:clipChildren="false"
         android:padding="16dp">
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:background="@color/black_alpha_20"/>
 
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/map_search_bar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -87,21 +87,21 @@
             android:imeOptions="actionSearch"
             android:inputType="numberDecimal"
             android:hint="Search your bus, tram or trolley..."/>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/map_search_bar_suggests_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp">
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/map_search_bar_suggests_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/transparent"/>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

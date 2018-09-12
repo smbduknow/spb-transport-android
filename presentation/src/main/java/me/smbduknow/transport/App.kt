@@ -1,7 +1,7 @@
 package me.smbduknow.transport
 
 import android.app.Application
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import me.smbduknow.transport.di.AppComponent
 import me.smbduknow.transport.di.AppModule
 import me.smbduknow.transport.di.DaggerAppComponent
