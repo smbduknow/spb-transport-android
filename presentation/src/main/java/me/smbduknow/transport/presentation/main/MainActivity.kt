@@ -1,41 +1,32 @@
 package me.smbduknow.transport.presentation.main
 
 import android.Manifest
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.KeyEvent
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import dagger.Lazy
 import kotlinx.android.synthetic.main.activity_main.*
-import me.smbduknow.mvpblueprint.BasePresenterActivity
-import me.smbduknow.mvpblueprint.PresenterFactory
 import me.smbduknow.transport.App
 import me.smbduknow.transport.R
 import me.smbduknow.transport.presentation.misc.PermissedAction
-import me.smbduknow.transport.presentation.misc.dismissKeyboard
 import javax.inject.Inject
 
 
-class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnMapReadyCallback, MainMvpView {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var mapAdapter: MapAdapter? = null
-
-    private val suggestAdapter by lazy { SuggestAdapter() }
 
     private lateinit var nearbyAction: PermissedAction
 
     @Inject
-    lateinit var lazyPresenter: Lazy<MainMvpPresenter>
+    lateinit var viewModelFactory: MapViewModelFactory
 
-    override fun onCreatePresenterFactory() = object : PresenterFactory<MainMvpPresenter>() {
-        override fun create() = lazyPresenter.get()
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(MapViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,67 +40,41 @@ class MainActivity : BasePresenterActivity<MainMvpPresenter, MainMvpView>(), OnM
         map_zoom_out.setOnClickListener { mapAdapter?.zoomOut() }
         map_geolocation.setOnClickListener { nearbyAction.invoke(this) }
 
-        suggestAdapter.setOnItemClickListener { presenter.onSuggestSelected(it) }
-
-        map_search_bar_suggests_list.apply {
-            adapter = suggestAdapter
-            layoutManager = LinearLayoutManager(context).apply { isAutoMeasureEnabled = true }
-            setHasFixedSize(true)
-        }
-
-        map_search_edit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                presenter.onSuggestQuery(s.toString())
-            }
-        })
-        map_search_edit.setOnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                dismissKeyboard(map_search_edit)
-                true
-            } else false
-        }
-
-
         nearbyAction = PermissedAction(Manifest.permission.ACCESS_FINE_LOCATION,
-                { presenter?.onRequestUserLocation() },
+                { viewModel.onRequestUserLocation() },
                 { Toast.makeText(this, "Permission not granted", Toast.LENGTH_SHORT).show() }
         )
 
         App.graph.injectTo(this)
+
+        viewModel.stateLiveData.observe(this, stateObserver)
+    }
+
+    override fun onDestroy() {
+        viewModel.stateLiveData.removeObserver(stateObserver)
+        super.onDestroy()
+    }
+
+    private val stateObserver = Observer<MapViewState> { state ->
+        state?.let {
+            mapAdapter?.recycleMarkers()
+            mapAdapter?.setMarkers(state.vehicles)
+//            mapAdapter?.animateCamera(state.userLocation, 13.5f, 0f)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapAdapter = MapAdapter(this, googleMap).apply {
-            setOnCameraMoveListener ( presenter::onMapCameraChanged )
+            setOnCameraMoveListener { _, bounds, _, _ ->
+                viewModel.onUpdateMapScope(bounds)
+            }
         }
-        presenter?.onMapReady()
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         nearbyAction.handlePermissionsResult(requestCode, permissions, grantResults)
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun render(viewState: MainViewState) {
-        mapAdapter?.moveCamera(viewState.mapState.target, viewState.mapState.zoom, viewState.mapState.bearing)
-        mapAdapter?.recycleMarkers(fullRefresh = true)
-        mapAdapter?.setMarkers(viewState.vehicles)
-        viewState.userLocation?.let { mapAdapter?.setUserMarker(it) }
-
-        with(viewState.queryResults.isNotEmpty()) {
-            map_overlay.isVisible = this
-            map_search_bar_suggests_wrapper.isVisible = this
-        }
-
-        suggestAdapter.setItems(
-                viewState.queryResults.sortedWith(compareBy({ it.typeLabel }, { it.label }))
-        )
-    }
-
-    override fun moveToPosition(target:LatLng) {
-        mapAdapter?.animateCamera(target)
     }
 
 }
