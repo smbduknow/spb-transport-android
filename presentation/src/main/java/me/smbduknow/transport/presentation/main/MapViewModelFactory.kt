@@ -1,7 +1,7 @@
 package me.smbduknow.transport.presentation.main
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import me.smbduknow.transport.domain.MapInteractor
 import javax.inject.Inject
 

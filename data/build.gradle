@@ -35,7 +35,7 @@ dependencies {
 
     implementation project(":domain")
 
-    final googlePlayVersion = '12.0.1'
+    final googlePlayVersion = '15.0.1'
 
     implementation "com.google.android.gms:play-services-location:$googlePlayVersion"
     implementation "com.google.transit:gtfs-realtime-bindings:0.0.4"

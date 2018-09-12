@@ -6,7 +6,7 @@ dependencies {
     final daggerVersion = '2.8'
 
     //kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //rx
     implementation "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"

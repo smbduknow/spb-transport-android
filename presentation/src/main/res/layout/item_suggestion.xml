@@ -9,7 +9,7 @@
     android:gravity="center"
     tools:background="@color/white">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/suggest_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
