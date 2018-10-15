@@ -4,10 +4,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.content.res.AppCompatResources
 import android.text.TextPaint
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import me.smbduknow.transport.R
 
 
@@ -47,7 +48,9 @@ object DrawableUtil {
         return bitmap
     }
 
-    fun getBitmapFromVectorDrawable(context: Context, @DrawableRes drawableId: Int): Bitmap {
+    fun getBitmapFromVectorDrawable(context: Context,
+                                    @DrawableRes drawableId: Int,
+                                    @DimenRes sizeResId: Int = R.dimen.pin_vehicle_size): Bitmap {
         val cached = if(drawableCache.containsKey(drawableId)) drawableCache[drawableId] else null
         if(cached != null) return cached
 
@@ -58,7 +61,7 @@ object DrawableUtil {
             drawable = DrawableCompat.wrap(drawable).mutate()
         }
 
-        val size = context.resources.getDimensionPixelSize(R.dimen.pin_size)
+        val size = context.resources.getDimensionPixelSize(sizeResId)
 
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)

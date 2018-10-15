@@ -14,5 +14,10 @@
 
     <color name="white">#ffffff</color>
     <color name="gray">#dddddd</color>
+    <color name="black">#000000</color>
+
+    <color name="transparent">#00ffffff</color>
+
+    <color name="black_alpha_20">#33000000</color>
 
 </resources>

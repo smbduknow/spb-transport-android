@@ -7,6 +7,7 @@ import me.smbduknow.transport.R
 
 
 fun GoogleMap.addMarker(ctx: Context,
+                        id: String,
                         type: String?,
                         label: String?,
                         lat: Double,
@@ -21,7 +22,7 @@ fun GoogleMap.addMarker(ctx: Context,
             .anchor(0.5f, 0.5f)
             .flat(true)
             .icon(icon)
-    )
+    ).apply { tag = id }
 }
 
 fun Marker.updateMarker(ctx: Context,

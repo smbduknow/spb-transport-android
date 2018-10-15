@@ -9,7 +9,8 @@ data class Vehicle(
         val label: String,
         val latitude: Double,
         val longitude: Double,
-        val bearing: Float
+        val bearing: Float,
+        val routeId: String
 ) {
     companion object {
         const val TYPE_BUS = "bus"

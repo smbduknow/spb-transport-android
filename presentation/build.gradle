@@ -7,13 +7,13 @@ apply from: '../deps.gradle'
 
 android {
     
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "me.smbduknow.transport"
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -42,32 +42,33 @@ android {
 
 dependencies {
 
-    compile project(":data")
-    compile project(":domain")
+    implementation project(":data")
+    implementation project(":domain")
 
     final rxAndroidVersion = '2.0.2'
 
-    final supportLibraryVersion = '27.0.2'
-    final googlePlayVersion = '11.8.0'
+    final androidXSupportVersion = '1.0.0'
+    final googlePlayVersion = '16.0.0'
 
     // rx
-    compile "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
-
-    // MVP
-    compile 'com.github.smbduknow:mvp-blueprint:0.9.3'
+    implementation "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
 
     // Dagger
-    kapt 'com.google.dagger:dagger-compiler:2.8'
+    kapt "com.google.dagger:dagger-compiler:2.16"
 
     //logging
-    compile 'com.jakewharton.timber:timber:4.3.1'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // ui-android
-    compile "com.android.support:support-v4:$supportLibraryVersion"
-    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.android.support:design:$supportLibraryVersion"
+    implementation "androidx.appcompat:appcompat:$androidXSupportVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidXSupportVersion"
+    implementation "androidx.recyclerview:recyclerview:$androidXSupportVersion"
+    implementation "androidx.cardview:cardview:$androidXSupportVersion"
+    implementation "com.google.android.material:material:$androidXSupportVersion"
 
-    compile "com.google.android.gms:play-services-maps:$googlePlayVersion"
-    compile "com.google.transit:gtfs-realtime-bindings:0.0.4"
+    implementation "com.google.android.gms:play-services-maps:$googlePlayVersion"
+
+    implementation "androidx.core:core-ktx:$androidXSupportVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
 
 }

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/events_scene_wrapper"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,8 +9,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-    <android.support.design.internal.ScrimInsetsFrameLayout
-        android:id="@+id/events_container"
+    <com.google.android.material.internal.ScrimInsetsFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="@bool/fit_system_window">
@@ -20,48 +18,90 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
-    </android.support.design.internal.ScrimInsetsFrameLayout>
+    </com.google.android.material.internal.ScrimInsetsFrameLayout>
+
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:layout_gravity="center|end"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="80dp"
         android:clipToPadding="false"
         android:clipChildren="false"
-        android:padding="8dp">
+        android:padding="16dp">
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_plus"
+            app:srcCompat="@drawable/ic_plus"
             app:backgroundTint="@color/white"
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_minus"
+            app:srcCompat="@drawable/ic_minus"
             app:backgroundTint="@color/white"
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/map_geolocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
-            android:src="@drawable/ic_my_location"
+            app:srcCompat="@drawable/ic_my_location"
             app:backgroundTint="@color/white"
             app:rippleColor="@color/gray"
             app:borderWidth="0dp"
             app:fabSize="mini"/>
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+
+    <View
+        android:id="@+id/map_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/black_alpha_20"/>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/map_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="16dp">
+        <EditText
+            android:id="@+id/map_search_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="16sp"
+            android:lines="1"
+            android:imeOptions="actionSearch"
+            android:inputType="numberDecimal"
+            android:hint="Search your bus, tram or trolley..."/>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/map_search_bar_suggests_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/map_search_bar_suggests_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"/>
+    </androidx.cardview.widget.CardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:gravity="center"
+    tools:background="@color/white">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/suggest_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="8dp"
+        app:srcCompat="@drawable/ic_vehicle_bus"/>
+
+    <TextView
+        android:id="@+id/suggest_label"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:textColor="@color/vehicle_bus_dark"
+        android:textStyle="bold"
+        android:text="191"/>
+
+</LinearLayout>

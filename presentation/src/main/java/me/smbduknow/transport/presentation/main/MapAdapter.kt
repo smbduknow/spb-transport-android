@@ -1,9 +1,6 @@
 package me.smbduknow.transport.presentation.main
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import android.support.v4.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -15,8 +12,8 @@ import me.smbduknow.transport.presentation.misc.updateMarker
 
 
 class MapAdapter(
-        val context: Context,
-        val googleMap: GoogleMap
+        private val context: Context,
+        private val googleMap: GoogleMap
 ) {
 
     private var curMarker: Marker? = null
@@ -27,7 +24,7 @@ class MapAdapter(
     private var cameraMoveListener:
             ((target: LatLng, bounds: LatLngBounds, zoom: Float, bearing: Float) -> Unit)? = null
 
-    private var markerClickListener: (() -> Unit)? = null
+    private var markerClickListener: ((id: String) -> Unit)? = null
     private var mapClickListener: (() -> Unit)? = null
 
     init {
@@ -36,27 +33,19 @@ class MapAdapter(
         googleMap.isIndoorEnabled = false
         googleMap.isBuildingsEnabled = false
         googleMap.uiSettings.isTiltGesturesEnabled = false
-
-        // enable getting location
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            googleMap.isMyLocationEnabled = true
-        }
         googleMap.uiSettings.isMyLocationButtonEnabled = false
 
         // set event listeners
         googleMap.setOnMarkerClickListener { onMarkerClick(it) }
         googleMap.setOnMapClickListener { onMapClick() }
         googleMap.setOnCameraIdleListener { onCameraMove() }
-
-        val spb = LatLng(59.845, 30.325)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(spb, 13.5f))
     }
 
     fun setOnCameraMoveListener(listener: (target: LatLng, bounds: LatLngBounds, zoom: Float, bearing: Float) -> Unit) {
         this.cameraMoveListener = listener
     }
 
-    fun setOnEventClickListener(listener: () -> Unit) {
+    fun setOnVehicleClickListener(listener: (id: String) -> Unit) {
         this.markerClickListener = listener
     }
 
@@ -68,6 +57,7 @@ class MapAdapter(
         items.forEach { vehicle ->
             if (!markerCache.containsKey(vehicle.id)) {
                 val marker = googleMap.addMarker(context,
+                        vehicle.id,
                         vehicle.type,
                         vehicle.label,
                         vehicle.latitude,
@@ -85,7 +75,13 @@ class MapAdapter(
         }
     }
 
-    fun recycleMarkers() {
+    fun recycleMarkers(fullRefresh: Boolean = false) {
+        if(fullRefresh) {
+            googleMap.clear()
+            markerCache.clear()
+            userMarker = null
+            return
+        }
         val bounds = googleMap.projection.visibleRegion.latLngBounds
         val iterator = markerCache.entries.iterator()
         while (iterator.hasNext()) {
@@ -102,7 +98,9 @@ class MapAdapter(
         if(userMarker != null) {
             userMarker?.position = position
         } else {
-            val bitmap = DrawableUtil.getBitmapFromVectorDrawable(context, R.drawable.ic_my_location)
+            val bitmap = DrawableUtil.getBitmapFromVectorDrawable(
+                    context, R.drawable.ic_pin_user, R.dimen.pin_user_size
+            )
             userMarker = googleMap.addMarker(MarkerOptions()
                     .position(position)
                     .anchor(0.5f, 0.5f)
@@ -112,14 +110,18 @@ class MapAdapter(
         }
     }
 
-    fun moveCamera(target: LatLng, zoom: Float, bearing: Float) {
+    fun moveCamera(target: LatLng,
+                   zoom: Float = googleMap.cameraPosition.zoom,
+                   bearing: Float = googleMap.cameraPosition.bearing) {
         if(!checkSameState(target, zoom, bearing))
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(
                     target, zoom, 0f, bearing
             )))
     }
 
-    fun animateCamera(target: LatLng, zoom: Float, bearing: Float) {
+    fun animateCamera(target: LatLng,
+                      zoom: Float = googleMap.cameraPosition.zoom,
+                      bearing: Float = googleMap.cameraPosition.bearing) {
         if(!checkSameState(target, zoom, bearing))
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(
                     target, zoom, 0f, bearing
@@ -128,8 +130,6 @@ class MapAdapter(
 
     fun zoomIn() = googleMap.animateCamera(CameraUpdateFactory.zoomIn())
     fun zoomOut() = googleMap.animateCamera(CameraUpdateFactory.zoomOut())
-
-    fun findMe() = googleMap.myLocation
 
     /* private methods */
 
@@ -145,7 +145,7 @@ class MapAdapter(
     }
 
     private fun onMarkerClick(marker: Marker): Boolean {
-        markerClickListener?.invoke()
+        markerClickListener?.invoke(marker.tag as? String ?: "")
         return true
     }
 

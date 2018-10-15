@@ -18,14 +18,22 @@ class TransportRepositoryImpl @Inject constructor(
         private val routesProvider: RoutesProvider
 ) : TransportRepository {
 
-    override fun getAllVehicles(mapScope: MapScope, types: List<String>): Single<List<Vehicle>> {
+    override fun getAllVehicles(mapScope: MapScope,
+                                types: List<String>,
+                                routeIds: List<String>,
+                                searchQuery: String): Single<List<Vehicle>> {
 
         val box = with(mapScope) {
             String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f", sw.lon, sw.lat, ne.lon, ne.lat)
         }
         val transports = types.joinToString(",")
 
-        return remote.getVehicles(box, transports)
+        return Single.just(routeIds)
+                .flatMap {
+                    if(routeIds.isNotEmpty()) Single.just(routeIds)
+                    else routesProvider.searchRoutesByLabel(searchQuery).map { it.map { it.id } }
+                }
+                .flatMap { remote.getVehicles(box, transports, routeIds) }
                 .map { it.entityList }
                 .flattenAsObservable { it }
                 .flatMapMaybe { Maybe.just(it).zipWith(
@@ -36,6 +44,9 @@ class TransportRepositoryImpl @Inject constructor(
 
     }
 
+    override fun searchRoutes(label: String): Single<List<Route>> =
+            routesProvider.searchRoutesByLabel(label)
+
 
     // TODO move to separate mapper class
     private fun mapVehicle(entity: GtfsRealtime.FeedEntity, route: Route): Vehicle {
@@ -45,7 +56,8 @@ class TransportRepositoryImpl @Inject constructor(
                 type = route.typeLabel,
                 latitude = entity.vehicle.position.latitude.toDouble(),
                 longitude = entity.vehicle.position.longitude.toDouble(),
-                bearing = entity.vehicle.position.bearing
+                bearing = entity.vehicle.position.bearing,
+                routeId = route.id
         )
     }
 
