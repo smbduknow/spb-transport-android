@@ -67,7 +67,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        android:background="@color/black_alpha_20"/>
+        android:background="@color/black_alpha_20"
+        android:visibility="gone"/>
 
 
     <androidx.cardview.widget.CardView

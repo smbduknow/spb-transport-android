@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import me.smbduknow.transport.App
 import me.smbduknow.transport.R
 import me.smbduknow.transport.presentation.misc.PermissedAction
+import me.smbduknow.transport.presentation.misc.map.MapIconProvider
 import javax.inject.Inject
 
 
@@ -64,7 +65,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mapAdapter = MapAdapter(this, googleMap).apply {
+        val iconProvider = MapIconProvider(this)
+        mapAdapter = MapAdapter(this, googleMap, iconProvider).apply {
             setOnCameraMoveListener { _, bounds, _, _ ->
                 viewModel.onUpdateMapScope(bounds)
             }

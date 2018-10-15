@@ -6,14 +6,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import me.smbduknow.transport.R
 import me.smbduknow.transport.domain.model.Vehicle
-import me.smbduknow.transport.presentation.misc.DrawableUtil
-import me.smbduknow.transport.presentation.misc.addMarker
-import me.smbduknow.transport.presentation.misc.updateMarker
+import me.smbduknow.transport.presentation.misc.map.MapIconProvider
 
 
 class MapAdapter(
-        private val context: Context,
-        private val googleMap: GoogleMap
+        context: Context,
+        private val googleMap: GoogleMap,
+        private val iconProvider: MapIconProvider
 ) {
 
     private var curMarker: Marker? = null
@@ -55,28 +54,28 @@ class MapAdapter(
 
     fun setMarkers(items: List<Vehicle>) {
         items.forEach { vehicle ->
+            val icon = iconProvider.getVehicleIcon(vehicle.type, vehicle.label, vehicle.bearing)
+            val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(icon)
+            val latLng = LatLng(vehicle.latitude, vehicle.longitude)
+
             if (!markerCache.containsKey(vehicle.id)) {
-                val marker = googleMap.addMarker(context,
-                        vehicle.id,
-                        vehicle.type,
-                        vehicle.label,
-                        vehicle.latitude,
-                        vehicle.longitude,
-                        vehicle.bearing)
-                markerCache.put(vehicle.id, marker)
+                markerCache[vehicle.id] = googleMap.addMarker(MarkerOptions()
+                        .position(latLng)
+                        .anchor(0.5f, 0.5f)
+                        .flat(true)
+                        .icon(bitmapDescriptor)
+                ).apply { tag = id }
             } else {
-                markerCache[vehicle.id]?.updateMarker(context,
-                        vehicle.type,
-                        vehicle.label,
-                        vehicle.latitude,
-                        vehicle.longitude,
-                        vehicle.bearing)
+                markerCache[vehicle.id]?.apply {
+                    position = latLng
+                    setIcon(bitmapDescriptor)
+                }
             }
         }
     }
 
     fun recycleMarkers(fullRefresh: Boolean = false) {
-        if(fullRefresh) {
+        if (fullRefresh) {
             googleMap.clear()
             markerCache.clear()
             userMarker = null
@@ -95,17 +94,16 @@ class MapAdapter(
     }
 
     fun setUserMarker(position: LatLng) {
-        if(userMarker != null) {
+        if (userMarker != null) {
             userMarker?.position = position
         } else {
-            val bitmap = DrawableUtil.getBitmapFromVectorDrawable(
-                    context, R.drawable.ic_pin_user, R.dimen.pin_user_size
-            )
+            val icon = iconProvider.getUserIcon()
+            val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(icon)
             userMarker = googleMap.addMarker(MarkerOptions()
                     .position(position)
                     .anchor(0.5f, 0.5f)
                     .flat(true)
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    .icon(bitmapDescriptor)
             )
         }
     }
@@ -113,7 +111,7 @@ class MapAdapter(
     fun moveCamera(target: LatLng,
                    zoom: Float = googleMap.cameraPosition.zoom,
                    bearing: Float = googleMap.cameraPosition.bearing) {
-        if(!checkSameState(target, zoom, bearing))
+        if (!checkSameState(target, zoom, bearing))
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(
                     target, zoom, 0f, bearing
             )))
@@ -122,7 +120,7 @@ class MapAdapter(
     fun animateCamera(target: LatLng,
                       zoom: Float = googleMap.cameraPosition.zoom,
                       bearing: Float = googleMap.cameraPosition.bearing) {
-        if(!checkSameState(target, zoom, bearing))
+        if (!checkSameState(target, zoom, bearing))
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(
                     target, zoom, 0f, bearing
             )))
