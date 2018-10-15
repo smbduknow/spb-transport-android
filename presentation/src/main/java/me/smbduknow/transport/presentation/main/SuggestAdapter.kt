@@ -1,9 +1,9 @@
 package me.smbduknow.transport.presentation.main
 
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 import me.smbduknow.transport.R

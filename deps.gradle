@@ -3,7 +3,7 @@ dependencies {
     final rxJavaVersion = '2.1.9'
     final rxKotlinVersion = '2.2.0'
 
-    final daggerVersion = '2.8'
+    final daggerVersion = '2.16'
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -14,5 +14,8 @@ dependencies {
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.10.0'
 
 }
