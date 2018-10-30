@@ -10,32 +10,45 @@ import me.smbduknow.transport.R
 
 class MapIconProvider(private val context: Context) {
 
-    private val RES_PIN_BUS = R.drawable.ic_vehicle_bus
-    private val RES_PIN_TROLLEY = R.drawable.ic_vehicle_trolley
-    private val RES_PIN_TRAM = R.drawable.ic_vehicle_tram
-
     private val cache = BitmapCache()
 
     fun getVehicleIcon(type: String, label: String, bearing: Float): Bitmap {
+        val resId = resolveIconResByType(type)
+        val icon = getBitmap(context, resId, R.dimen.pin_vehicle_size)
+        return Bitmap.createBitmap(icon.width, icon.height, Bitmap.Config.ARGB_8888).apply {
+            val canvas = Canvas(this)
+            drawIcon(canvas, icon, bearing)
+            drawText(canvas, label)
+        }
+    }
 
-        val iconBitmap = getBitmap(context, resolveIconResByType(type), R.dimen.pin_vehicle_size)
+    fun getUserIcon() = getBitmap(context, R.drawable.ic_pin_user, R.dimen.pin_user_size)
 
+    @DrawableRes
+    private fun resolveIconResByType(type: String): Int = when (type) {
+        "bus" -> R.drawable.ic_vehicle_bus
+        "trolley" -> R.drawable.ic_vehicle_trolley
+        "tram" -> R.drawable.ic_vehicle_tram
+        else -> 0
+    }
 
-        val bitmap = Bitmap.createBitmap(iconBitmap.width, iconBitmap.height, Bitmap.Config.ARGB_8888)
+    private fun getBitmap(context: Context,
+                          @DrawableRes drawableId: Int,
+                          @DimenRes sizeResId: Int = R.dimen.pin_vehicle_size): Bitmap =
+            cache.getOrPut(drawableId) { bitmapFactory(context, drawableId, sizeResId) }
 
-        val canvas = Canvas(bitmap)
-
-        // draw icon
+    private fun drawIcon(canvas: Canvas, icon: Bitmap, bearing: Float) {
         val bitmapPaint = Paint().apply {
             isAntiAlias = true
             isFilterBitmap = true
         }
         val matrix = Matrix().apply {
-            setRotate(180 + bearing, iconBitmap.width / 2f, iconBitmap.height / 2f)
+            setRotate(180 + bearing, icon.width / 2f, icon.height / 2f)
         }
-        canvas.drawBitmap(iconBitmap, matrix, bitmapPaint)
+        canvas.drawBitmap(icon, matrix, bitmapPaint)
+    }
 
-        // draw text
+    private fun drawText(canvas: Canvas, text: String) {
         val fontSize = context.resources.getDimensionPixelSize(R.dimen.text_pin).toFloat()
         val textPaint = (TextPaint(TextPaint.ANTI_ALIAS_FLAG)).apply {
             style = Paint.Style.FILL
@@ -43,25 +56,8 @@ class MapIconProvider(private val context: Context) {
             textSize = fontSize
             textAlign = Paint.Align.CENTER
         }
-
-        canvas.drawText(label, (bitmap.width / 2).toFloat(), (bitmap.height / 2 + fontSize / 3), textPaint)
-
-        return bitmap
+        val dy = fontSize / 3
+        canvas.drawText(text, (canvas.width / 2f), (canvas.height / 2 + dy), textPaint)
     }
-
-    fun getUserIcon() = getBitmap(context, R.drawable.ic_pin_user, R.dimen.pin_user_size)
-
-    @DrawableRes
-    private fun resolveIconResByType(type: String): Int = when (type) {
-        "bus" -> RES_PIN_BUS
-        "trolley" -> RES_PIN_TROLLEY
-        "tram" -> RES_PIN_TRAM
-        else -> RES_PIN_BUS
-    }
-
-    private fun getBitmap(context: Context,
-                          @DrawableRes drawableId: Int,
-                          @DimenRes sizeResId: Int = R.dimen.pin_vehicle_size): Bitmap =
-            cache.getOrPut(drawableId) { bitmapFactory(context, drawableId, sizeResId) }
 
 }
